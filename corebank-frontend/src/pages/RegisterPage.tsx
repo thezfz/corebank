@@ -27,7 +27,7 @@ export default function RegisterPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">核心银行</h1>
+          <h1 className="text-2xl font-bold text-gray-900">数脉银行</h1>
           <p className="mt-2 text-sm text-gray-600">安全数字银行</p>
         </div>
       </div>
@@ -37,7 +37,7 @@ export default function RegisterPage() {
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-gray-900 text-center">创建账户</h2>
             <p className="mt-1 text-center text-sm text-gray-600">
-              加入核心银行，享受安全数字银行服务
+              加入数脉银行，享受安全数字银行服务
             </p>
           </div>
           
@@ -143,7 +143,7 @@ export default function RegisterPage() {
 
       <div className="mt-6 text-center">
         <p className="text-xs text-gray-500">
-          © 2024 核心银行. 安全数字银行平台.
+          © 2024 数脉银行. 安全数字银行平台.
         </p>
       </div>
     </div>

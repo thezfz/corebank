@@ -23,7 +23,7 @@ export default function LoginPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">核心银行</h1>
+          <h1 className="text-2xl font-bold text-gray-900">数脉银行</h1>
           <p className="mt-2 text-sm text-gray-600">安全数字银行 - 🚀 热重载工作中! 🔥</p>
         </div>
       </div>
@@ -139,7 +139,7 @@ export default function LoginPage() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">初次使用核心银行？</span>
+                <span className="px-2 bg-white text-gray-500">初次使用数脉银行？</span>
               </div>
             </div>
 
@@ -157,7 +157,7 @@ export default function LoginPage() {
 
       <div className="mt-6 text-center">
         <p className="text-xs text-gray-500">
-          © 2024 核心银行. 安全数字银行平台.
+          © 2024 数脉银行. 安全数字银行平台.
         </p>
       </div>
     </div>
