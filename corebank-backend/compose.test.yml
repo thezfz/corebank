@@ -1,0 +1,36 @@
+# Podman Compose file for CoreBank testing environment
+# Defines isolated services for running integration tests
+
+services:
+  # Test PostgreSQL Database Service
+  test_postgres:
+    image: docker.io/library/postgres:16
+    environment:
+      - POSTGRES_USER=${TEST_POSTGRES_USER:-corebank_test_user}
+      - POSTGRES_PASSWORD=${TEST_POSTGRES_PASSWORD:-test_password}
+      - POSTGRES_DB=${TEST_POSTGRES_DB:-corebank_test}
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    container_name: corebank_test_postgres
+    ports:
+      - "${TEST_POSTGRES_PORT:-5433}:5432"
+    volumes:
+      # Use tmpfs for faster test database operations
+      - type: tmpfs
+        target: /var/lib/postgresql/data
+        tmpfs:
+          size: 1G
+    networks:
+      - corebank_test_network
+    restart: "no"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${TEST_POSTGRES_USER:-corebank_test_user} -d ${TEST_POSTGRES_DB:-corebank_test}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+# Custom network for testing
+networks:
+  corebank_test_network:
+    driver: bridge
+    name: corebank_test_network

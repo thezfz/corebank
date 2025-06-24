@@ -1,0 +1,121 @@
+# Podman Compose file for CoreBank development environment
+# Defines the FastAPI app and PostgreSQL services
+
+services:
+  # FastAPI Application Service
+  app:
+    build:
+      context: .
+      dockerfile: Containerfile
+      target: development
+    env_file: 
+      - .env
+    environment:
+      # System timezone
+      - TZ=Asia/Shanghai
+      
+      # Proxy settings (if needed)
+      - http_proxy=${HTTP_PROXY:-}
+      - https_proxy=${HTTPS_PROXY:-}
+      - HTTP_PROXY=${HTTP_PROXY:-}
+      - HTTPS_PROXY=${HTTPS_PROXY:-}
+      - no_proxy=${NO_PROXY:-localhost,127.0.0.1,.internal,postgres}
+      - NO_PROXY=${NO_PROXY:-localhost,127.0.0.1,.internal,postgres}
+      
+      # Application configuration
+      - API_HOST=${API_HOST:-0.0.0.0}
+      - API_PORT=${API_PORT:-8000}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - RELOAD=${RELOAD:-true}
+      
+      # Database configuration
+      - POSTGRES_USER=${POSTGRES_USER:-corebank_user}
+      - POSTGRES_DB=${POSTGRES_DB:-corebank}
+      - POSTGRES_HOST=${POSTGRES_HOST:-postgres}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      
+      # Construct DATABASE_URL using environment variables
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-corebank_user}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-postgres}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-corebank}
+      
+      # Security configuration
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM:-HS256}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+      
+    container_name: corebank_app
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      # Mount source code for development hot reload
+      - .:/app:z
+      # Mount logs and data directories
+      - ./logs:/app/logs:z
+      - ./data:/app/data:z
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - corebank_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # PostgreSQL Database Service
+  postgres:
+    image: docker.io/library/postgres:16
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-corebank_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB:-corebank}
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    container_name: corebank_postgres
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - corebank_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-corebank_user} -d ${POSTGRES_DB:-corebank}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+# Named volumes for data persistence
+volumes:
+  postgres_data:
+    name: corebank_postgres_data
+  corebank_logs:
+    name: corebank_logs
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ../corebank-frontend
+      dockerfile: Containerfile
+    container_name: corebank_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - app
+    networks:
+      - corebank_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+# Custom network
+networks:
+  corebank_network:
+    driver: bridge
+    name: corebank_dev_network
