@@ -3,7 +3,7 @@ export default function DashboardPage() {
     <div className="px-4 py-6 sm:px-0">
       <div className="border-4 border-dashed border-gray-200 rounded-lg h-96 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">欢迎使用数脉银行</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">欢迎使用核心银行</h1>
           <p className="text-gray-600">您的安全银行仪表板</p>
           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="card">
