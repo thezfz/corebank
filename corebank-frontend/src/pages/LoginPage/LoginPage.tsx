@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
@@ -7,7 +7,13 @@ export default function LoginPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const { login, isLoginLoading, loginError } = useAuth()
+  const { user, login, isLoginLoading, loginError } = useAuth()
+
+  // Debug: Log user state changes
+  useEffect(() => {
+    console.log('LoginPage: user state changed:', user)
+    // Navigation is now handled by App.tsx
+  }, [user])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,8 +29,8 @@ export default function LoginPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">核心银行</h1>
-          <p className="mt-2 text-sm text-gray-600">安全数字银行 - 🚀 热重载工作中! 🔥</p>
+          <h1 className="text-2xl font-bold text-gray-900">数脉银行</h1>
+          <p className="mt-2 text-sm text-gray-600">安全数字银行</p>
         </div>
       </div>
 
@@ -108,9 +114,15 @@ export default function LoginPage() {
             </div>
 
             {loginError && (
-              <div className="rounded-lg bg-red-50 border border-red-200 p-3">
-                <div className="text-sm text-red-700">
-                  用户名或密码错误，请重试。
+              <div className="rounded-lg bg-red-50 border border-red-200 p-4">
+                <div className="flex items-start">
+                  <svg className="h-5 w-5 text-red-400 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  <div>
+                    <h3 className="text-sm font-medium text-red-800">登录失败</h3>
+                    <p className="text-sm text-red-700 mt-1">用户名或密码错误，请检查后重试</p>
+                  </div>
                 </div>
               </div>
             )}
@@ -139,7 +151,7 @@ export default function LoginPage() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">初次使用核心银行？</span>
+                <span className="px-2 bg-white text-gray-500">初次使用数脉银行？</span>
               </div>
             </div>
 
@@ -157,7 +169,7 @@ export default function LoginPage() {
 
       <div className="mt-6 text-center">
         <p className="text-xs text-gray-500">
-          © 2024 核心银行. 安全数字银行平台.
+          © 2024 数脉银行. 安全数字银行平台.
         </p>
       </div>
     </div>

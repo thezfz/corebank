@@ -1,0 +1,51 @@
+import { lazy } from 'react'
+import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
+import App from '../App'
+import LoadingSpinner from '../components/common/LoadingSpinner'
+
+// Lazy load pages
+const LoginPage = lazy(() => import('../pages/LoginPage'))
+const RegisterPage = lazy(() => import('../pages/RegisterPage'))
+const DashboardPage = lazy(() => import('../pages/DashboardPage'))
+const AccountsPage = lazy(() => import('../pages/AccountsPage'))
+const TransactionsPage = lazy(() => import('../pages/TransactionsPage'))
+
+// Router configuration
+const router = createBrowserRouter([
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/register',
+    element: <RegisterPage />,
+  },
+  {
+    path: '/',
+    element: <App />,
+    children: [
+      {
+        index: true,
+        element: <Navigate to="/dashboard" replace />,
+      },
+      {
+        path: 'dashboard',
+        element: <DashboardPage />,
+      },
+      {
+        path: 'accounts',
+        element: <AccountsPage />,
+      },
+      {
+        path: 'transactions',
+        element: <TransactionsPage />,
+      },
+    ],
+  },
+  {
+    path: '*',
+    element: <Navigate to="/" replace />,
+  },
+])
+
+export default router

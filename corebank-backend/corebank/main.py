@@ -171,12 +171,31 @@ def add_exception_handlers(app: FastAPI) -> None:
         logger.warning(
             f"Validation error for {request.method} {request.url.path}: {exc.errors()}"
         )
-        
+
+        # Convert errors to JSON-serializable format
+        serializable_errors = []
+        for error in exc.errors():
+            serializable_error = {
+                "type": error.get("type"),
+                "loc": error.get("loc"),
+                "msg": str(error.get("msg", "")),
+                "input": str(error.get("input", "")) if error.get("input") is not None else None,
+            }
+            # Add context if it exists and is serializable
+            if "ctx" in error:
+                try:
+                    serializable_error["ctx"] = error["ctx"]
+                except (TypeError, ValueError):
+                    # If ctx is not serializable, convert to string
+                    serializable_error["ctx"] = str(error["ctx"])
+
+            serializable_errors.append(serializable_error)
+
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content={
                 "detail": "Validation error",
-                "errors": exc.errors(),
+                "errors": serializable_errors,
                 "status_code": status.HTTP_422_UNPROCESSABLE_ENTITY,
                 "path": str(request.url.path)
             }

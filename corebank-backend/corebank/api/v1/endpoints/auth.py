@@ -10,7 +10,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from corebank.api.v1.dependencies import get_postgres_repository
+from corebank.api.v1.dependencies import get_postgres_repository, get_current_user
 from corebank.models.user import UserCreate, UserLogin, UserResponse
 from corebank.models.common import Token, MessageResponse
 from corebank.repositories.postgres_repo import PostgresRepository
@@ -169,6 +169,22 @@ async def login_user_form(
     
     # Use the same login logic
     return await login_user(user_credentials, repository)
+
+
+@router.get("/me", response_model=UserResponse)
+async def get_current_user_info(
+    current_user: Annotated[dict, Depends(get_current_user)]
+) -> UserResponse:
+    """
+    Get current authenticated user information.
+
+    Args:
+        current_user: Current authenticated user from token
+
+    Returns:
+        UserResponse: Current user information
+    """
+    return UserResponse(**current_user)
 
 
 @router.post("/validate-token", response_model=MessageResponse)

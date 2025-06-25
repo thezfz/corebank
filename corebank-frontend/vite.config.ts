@@ -15,9 +15,17 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://corebank_app:8000',
         changeOrigin: true,
         secure: false,
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log('Proxy error:', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('Proxying request to:', options.target + req.url);
+          });
+        },
       },
     },
   },

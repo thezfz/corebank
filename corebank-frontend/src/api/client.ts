@@ -29,8 +29,16 @@ class ApiClient {
       (response) => response,
       (error: AxiosError<ApiError>) => {
         if (error.response?.status === 401) {
-          this.clearAuth()
-          window.location.href = '/login'
+          // Only clear auth and redirect if this is NOT a login request
+          // Login failures should be handled by the login form, not by auto-redirect
+          const isLoginRequest = error.config?.url?.includes('/auth/login')
+
+          if (!isLoginRequest) {
+            // This is an authenticated request that failed due to invalid/expired token
+            this.clearAuth()
+            window.location.href = '/login'
+          }
+          // For login requests, just let the error propagate to be handled by the form
         }
         return Promise.reject(error)
       }
@@ -66,6 +74,11 @@ class ApiClient {
 
   logout() {
     this.clearAuth()
+  }
+
+  async getCurrentUser(): Promise<User> {
+    const response = await this.client.get<User>('/auth/me')
+    return response.data
   }
 
   // Account methods

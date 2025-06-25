@@ -25,8 +25,11 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Set the database URL from settings
-config.set_main_option("sqlalchemy.url", settings.database_url)
+# Set the database URL from settings with psycopg driver
+database_url = settings.database_url
+if database_url.startswith("postgresql://"):
+    database_url = database_url.replace("postgresql://", "postgresql+psycopg://", 1)
+config.set_main_option("sqlalchemy.url", database_url)
 
 # add your model's MetaData object here
 # for 'autogenerate' support

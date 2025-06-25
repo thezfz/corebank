@@ -143,25 +143,23 @@ class PasswordManager:
         special_chars = "!@#$%^&*()_+-=[]{}|;:,.<>?"
         if not any(c in special_chars for c in password):
             issues.append("Password should contain at least one special character")
-        
-        # Common password patterns (basic check)
+
+        # Common password patterns (basic check) - only check for exact matches
         common_patterns = [
-            "password", "123456", "qwerty", "abc123", "admin", "user",
-            "login", "welcome", "monkey", "dragon"
+            "password", "123456", "qwerty", "admin", "user",
+            "login", "welcome"
         ]
-        
+
         password_lower = password.lower()
-        for pattern in common_patterns:
-            if pattern in password_lower:
-                issues.append(f"Password contains common pattern: {pattern}")
-                break
-        
-        # Sequential characters check
-        if _has_sequential_chars(password):
-            issues.append("Password should not contain sequential characters")
-        
-        # Repeated characters check
-        if _has_repeated_chars(password):
+        if password_lower in common_patterns:
+            issues.append(f"Password is too common: {password_lower}")
+
+        # Sequential characters check (only for longer sequences)
+        if _has_sequential_chars(password, min_length=4):
+            issues.append("Password should not contain long sequential characters")
+
+        # Repeated characters check (allow some repetition)
+        if _has_repeated_chars(password, max_repeats=4):
             issues.append("Password should not contain too many repeated characters")
         
         return {
