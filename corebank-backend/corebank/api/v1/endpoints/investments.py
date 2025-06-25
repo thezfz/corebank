@@ -327,27 +327,37 @@ async def get_portfolio_summary(
 async def get_investment_transactions(
     product_id: Optional[UUID] = Query(None, description="Filter by product ID"),
     transaction_type: Optional[str] = Query(None, description="Filter by transaction type"),
+    skip: int = Query(0, ge=0, description="Number of records to skip"),
+    limit: int = Query(100, ge=1, le=1000, description="Maximum number of records to return"),
     current_user: Annotated[dict, Depends(get_current_user)] = None,
     investment_service: Annotated[InvestmentService, Depends(get_investment_service)] = None
 ) -> List[InvestmentTransactionResponse]:
     """
     Get user's investment transactions.
-    
+
     Args:
         product_id: Filter by product ID
         transaction_type: Filter by transaction type
-        pagination: Pagination parameters
+        skip: Number of records to skip
+        limit: Maximum number of records to return
         current_user: Current authenticated user
         investment_service: Investment service dependency
-        
+
     Returns:
-        PaginatedResponse[InvestmentTransactionResponse]: Paginated investment transactions
+        List[InvestmentTransactionResponse]: List of investment transactions
     """
     try:
-        # This would be implemented in the service layer
-        # For now, return empty response
-        return []
-        
+        transactions = await investment_service.get_user_investment_transactions(
+            user_id=current_user['id'],
+            product_id=product_id,
+            transaction_type=transaction_type,
+            skip=skip,
+            limit=limit
+        )
+
+        logger.info(f"Retrieved {len(transactions)} investment transactions for user {current_user['id']}")
+        return transactions
+
     except Exception as e:
         logger.error(f"Failed to get investment transactions for user {current_user['id']}: {e}")
         raise HTTPException(
