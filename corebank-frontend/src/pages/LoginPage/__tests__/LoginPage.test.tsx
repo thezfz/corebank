@@ -47,7 +47,7 @@ describe('LoginPage 集成测试', () => {
   it('应该渲染登录表单的所有元素', () => {
     render(<LoginPage />)
     
-    expect(screen.getByText('核心银行')).toBeInTheDocument()
+    expect(screen.getByText('数脉银行')).toBeInTheDocument()
     expect(screen.getByText('欢迎回来')).toBeInTheDocument()
     expect(screen.getByLabelText('用户名')).toBeInTheDocument()
     expect(screen.getByLabelText('密码')).toBeInTheDocument()

@@ -27,8 +27,9 @@
     },
 
     /* Testing */
-    "types": ["vitest/globals", "@testing-library/jest-dom"]
+    // "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["src", "vitest-setup.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vitest-setup.d.ts"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/test/**/*"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -5,6 +5,11 @@ import type {
   Transaction, DepositRequest, WithdrawalRequest, TransferRequest,
   PaginatedResponse, ApiError
 } from '../types/api'
+import type {
+  InvestmentProduct, RiskAssessment, RiskAssessmentCreate,
+  InvestmentTransaction, InvestmentPurchaseRequest, InvestmentRedemptionRequest,
+  InvestmentHolding, PortfolioSummary, ProductRecommendation
+} from '../types/investment'
 
 class ApiClient {
   private client: AxiosInstance
@@ -132,6 +137,76 @@ class ApiClient {
 
   async getTransaction(transactionId: string): Promise<Transaction> {
     const response = await this.client.get<Transaction>(`/transactions/${transactionId}`)
+    return response.data
+  }
+
+  async getRecentTransactions(limit = 5): Promise<Transaction[]> {
+    const response = await this.client.get<PaginatedResponse<Transaction>>(
+      '/transactions/recent',
+      { params: { page_size: limit } }
+    )
+    return response.data.items
+  }
+
+  // Investment methods
+  async getInvestmentProducts(params?: {
+    product_type?: string
+    risk_level?: number
+    is_active?: boolean
+    page?: number
+    page_size?: number
+  }): Promise<InvestmentProduct[]> {
+    const response = await this.client.get<InvestmentProduct[]>('/investments/products', { params })
+    return response.data
+  }
+
+  async getInvestmentProduct(productId: string): Promise<InvestmentProduct> {
+    const response = await this.client.get<InvestmentProduct>(`/investments/products/${productId}`)
+    return response.data
+  }
+
+  async createRiskAssessment(data: RiskAssessmentCreate): Promise<RiskAssessment> {
+    const response = await this.client.post<RiskAssessment>('/investments/risk-assessment', data)
+    return response.data
+  }
+
+  async getRiskAssessment(): Promise<RiskAssessment | null> {
+    const response = await this.client.get<RiskAssessment | null>('/investments/risk-assessment')
+    return response.data
+  }
+
+  async purchaseInvestment(data: InvestmentPurchaseRequest): Promise<InvestmentTransaction> {
+    const response = await this.client.post<InvestmentTransaction>('/investments/purchase', data)
+    return response.data
+  }
+
+  async redeemInvestment(data: InvestmentRedemptionRequest): Promise<InvestmentTransaction> {
+    const response = await this.client.post<InvestmentTransaction>('/investments/redeem', data)
+    return response.data
+  }
+
+  async getInvestmentHoldings(): Promise<InvestmentHolding[]> {
+    const response = await this.client.get<InvestmentHolding[]>('/investments/holdings')
+    return response.data
+  }
+
+  async getPortfolioSummary(): Promise<PortfolioSummary> {
+    const response = await this.client.get<PortfolioSummary>('/investments/portfolio-summary')
+    return response.data
+  }
+
+  async getInvestmentTransactions(params?: {
+    product_id?: string
+    transaction_type?: string
+    page?: number
+    page_size?: number
+  }): Promise<PaginatedResponse<InvestmentTransaction>> {
+    const response = await this.client.get<PaginatedResponse<InvestmentTransaction>>('/investments/transactions', { params })
+    return response.data
+  }
+
+  async getProductRecommendations(): Promise<ProductRecommendation[]> {
+    const response = await this.client.get<ProductRecommendation[]>('/investments/recommendations')
     return response.data
   }
 

@@ -18,6 +18,7 @@ from corebank.core.db import get_db_manager, DatabaseManager
 from corebank.repositories.postgres_repo import PostgresRepository
 from corebank.services.account_service import AccountService
 from corebank.services.transaction_service import TransactionService
+from corebank.services.investment_service import InvestmentService
 from corebank.security.token import get_user_id_from_token, verify_token
 from corebank.models.common import TokenData
 
@@ -84,14 +85,29 @@ def get_transaction_service(
 ) -> TransactionService:
     """
     Get transaction service instance.
-    
+
     Args:
         repository: Repository dependency
-        
+
     Returns:
         TransactionService: Transaction service instance
     """
     return TransactionService(repository)
+
+
+def get_investment_service(
+    repository: Annotated[PostgresRepository, Depends(get_postgres_repository)]
+) -> InvestmentService:
+    """
+    Get investment service instance.
+
+    Args:
+        repository: Repository dependency
+
+    Returns:
+        InvestmentService: Investment service instance
+    """
+    return InvestmentService(repository)
 
 
 # Authentication dependencies

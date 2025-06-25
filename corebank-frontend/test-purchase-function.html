@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>理财产品购买功能测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-step {
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f9fafb;
+        }
+        .status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .status.error {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+        .status.pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .test-button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background-color: #2563eb;
+        }
+        .test-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        h1 {
+            color: #1f2937;
+            text-align: center;
+        }
+        h2 {
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+        .description {
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+        .error-message {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        .success-message {
+            background-color: #dcfce7;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🛒 理财产品购买功能测试</h1>
+    
+    <div class="container">
+        <h2>📋 测试步骤</h2>
+        <p class="description">按照以下步骤测试理财产品购买功能</p>
+        
+        <div class="test-step">
+            <h3>步骤 1: 登录系统</h3>
+            <p>使用测试账户登录系统</p>
+            <ul>
+                <li><strong>用户名:</strong> investor</li>
+                <li><strong>密码:</strong> password123</li>
+                <li><strong>账户余额:</strong> ¥100,000</li>
+            </ul>
+            <a href="http://localhost:5173/login" class="test-button" target="_blank">
+                前往登录页面
+            </a>
+            <span class="status pending" id="login-status">待完成</span>
+        </div>
+        
+        <div class="test-step">
+            <h3>步骤 2: 访问理财产品页面</h3>
+            <p>查看可购买的理财产品列表</p>
+            <a href="http://localhost:5173/investments/products" class="test-button" target="_blank">
+                理财产品页面
+            </a>
+            <span class="status pending" id="products-status">待完成</span>
+        </div>
+        
+        <div class="test-step">
+            <h3>步骤 3: 选择产品并点击购买</h3>
+            <p>推荐测试产品：</p>
+            <ul>
+                <li><strong>数脉货币基金A:</strong> 起投金额 ¥100，无手续费</li>
+                <li><strong>数脉稳健理财30天:</strong> 起投金额 ¥1,000，手续费 0.5%</li>
+            </ul>
+            <span class="status pending" id="select-status">待完成</span>
+        </div>
+        
+        <div class="test-step">
+            <h3>步骤 4: 填写购买信息</h3>
+            <p>在购买模态框中填写以下信息：</p>
+            <ul>
+                <li><strong>选择账户:</strong> 系统会自动选择唯一账户</li>
+                <li><strong>投资金额:</strong> 输入符合起投要求的金额</li>
+                <li><strong>确认信息:</strong> 检查产品信息和费用计算</li>
+            </ul>
+            <span class="status pending" id="form-status">待完成</span>
+        </div>
+        
+        <div class="test-step">
+            <h3>步骤 5: 提交购买申请</h3>
+            <p>点击"确认购买"按钮提交申请</p>
+            <ul>
+                <li>系统会验证账户余额</li>
+                <li>计算手续费和净投资金额</li>
+                <li>创建投资持仓记录</li>
+                <li>扣除账户余额</li>
+            </ul>
+            <span class="status pending" id="submit-status">待完成</span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>🔍 购买后验证</h2>
+        <p class="description">购买成功后，可以通过以下页面验证结果</p>
+        
+        <div class="test-step">
+            <h3>验证持仓记录</h3>
+            <p>查看新增的投资持仓</p>
+            <a href="http://localhost:5173/investments/holdings" class="test-button" target="_blank">
+                我的持仓
+            </a>
+        </div>
+        
+        <div class="test-step">
+            <h3>验证交易记录</h3>
+            <p>查看购买交易记录</p>
+            <a href="http://localhost:5173/investments/transactions" class="test-button" target="_blank">
+                交易记录
+            </a>
+        </div>
+        
+        <div class="test-step">
+            <h3>验证账户余额</h3>
+            <p>确认账户余额已正确扣除</p>
+            <a href="http://localhost:5173/accounts" class="test-button" target="_blank">
+                账户管理
+            </a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>⚠️ 常见问题排查</h2>
+        <p class="description">如果购买失败，请检查以下问题</p>
+        
+        <div class="test-step">
+            <h3>问题 1: 购买按钮无响应</h3>
+            <ul>
+                <li>检查是否已登录系统</li>
+                <li>检查浏览器控制台是否有JavaScript错误</li>
+                <li>刷新页面重试</li>
+            </ul>
+        </div>
+        
+        <div class="test-step">
+            <h3>问题 2: 提示余额不足</h3>
+            <ul>
+                <li>确认投资金额不超过账户余额</li>
+                <li>考虑手续费的影响</li>
+                <li>检查账户是否被冻结</li>
+            </ul>
+        </div>
+        
+        <div class="test-step">
+            <h3>问题 3: 提示金额不符合要求</h3>
+            <ul>
+                <li>确认投资金额不低于起投金额</li>
+                <li>确认投资金额不超过最大投资限额</li>
+                <li>检查金额格式是否正确</li>
+            </ul>
+        </div>
+        
+        <div class="test-step">
+            <h3>问题 4: 服务器错误</h3>
+            <ul>
+                <li>检查后端服务是否正常运行</li>
+                <li>检查数据库连接是否正常</li>
+                <li>查看后端日志获取详细错误信息</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>🚀 快速测试链接</h2>
+        <p class="description">一键访问相关页面</p>
+        <div>
+            <a href="http://localhost:5173/login" class="test-button" target="_blank">登录</a>
+            <a href="http://localhost:5173/investments/products" class="test-button" target="_blank">理财产品</a>
+            <a href="http://localhost:5173/investments/holdings" class="test-button" target="_blank">我的持仓</a>
+            <a href="http://localhost:5173/investments/transactions" class="test-button" target="_blank">交易记录</a>
+            <a href="http://localhost:5173/accounts" class="test-button" target="_blank">账户管理</a>
+        </div>
+    </div>
+
+    <script>
+        // 简单的状态跟踪
+        let testProgress = {
+            login: false,
+            products: false,
+            select: false,
+            form: false,
+            submit: false
+        };
+
+        function updateStatus(step, status) {
+            const element = document.getElementById(step + '-status');
+            if (element) {
+                element.className = `status ${status}`;
+                element.textContent = status === 'success' ? '✅ 已完成' : 
+                                    status === 'error' ? '❌ 失败' : '⏳ 待完成';
+            }
+        }
+
+        // 页面加载时的提示
+        window.addEventListener('load', function() {
+            console.log('理财产品购买功能测试工具已加载');
+            console.log('请按照步骤进行测试');
+            
+            // 检查是否已登录（简单检查）
+            if (localStorage.getItem('auth_token')) {
+                updateStatus('login', 'success');
+                testProgress.login = true;
+            }
+        });
+    </script>
+</body>
+</html>

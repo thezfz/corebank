@@ -263,6 +263,54 @@ class TransactionService:
             pagination=pagination
         )
 
+    async def get_recent_transactions(
+        self,
+        user_id: UUID,
+        pagination: PaginationParams
+    ) -> PaginatedResponse[TransactionResponse]:
+        """
+        Get recent transactions across all user accounts.
+
+        Args:
+            user_id: User ID
+            pagination: Pagination parameters
+
+        Returns:
+            PaginatedResponse[TransactionResponse]: Recent transactions
+        """
+        # Get user's account IDs
+        user_accounts = await self.repository.get_user_accounts(user_id)
+        account_ids = [account['id'] for account in user_accounts]
+
+        if not account_ids:
+            # No accounts, return empty response
+            return PaginatedResponse.create(
+                items=[],
+                total_count=0,
+                pagination=pagination
+            )
+
+        # Get recent transactions across all accounts
+        transactions = await self.repository.get_recent_transactions_for_accounts(
+            account_ids=account_ids,
+            limit=pagination.page_size,
+            offset=pagination.offset
+        )
+
+        # Get total count
+        total_count = await self.repository.count_transactions_for_accounts(account_ids)
+
+        # Convert to response models
+        transaction_responses = [
+            TransactionResponse(**transaction) for transaction in transactions
+        ]
+
+        return PaginatedResponse.create(
+            items=transaction_responses,
+            total_count=total_count,
+            pagination=pagination
+        )
+
     async def get_transaction(
         self,
         user_id: UUID,

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预期收益率验证</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .product-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f9fafb;
+        }
+        .rate-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #059669;
+            margin: 10px 0;
+        }
+        .status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .status.error {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+        .test-button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background-color: #2563eb;
+        }
+        h1 {
+            color: #1f2937;
+            text-align: center;
+        }
+        h2 {
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+        .description {
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+        #results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 预期收益率显示验证工具</h1>
+    
+    <div class="container">
+        <h2>📊 API数据验证</h2>
+        <p class="description">点击下面的按钮测试API返回的预期收益率数据格式</p>
+        
+        <button class="test-button" onclick="testProductsAPI()">测试产品列表API</button>
+        <button class="test-button" onclick="testRecommendationsAPI()">测试推荐API</button>
+        <button class="test-button" onclick="clearResults()">清除结果</button>
+        
+        <div id="results"></div>
+    </div>
+    
+    <div class="container">
+        <h2>✅ 预期结果</h2>
+        <p class="description">修复后，所有产品的预期年化收益率应该正确显示：</p>
+        <div class="product-card">
+            <strong>数脉货币基金A (MMF001)</strong>
+            <div class="rate-display">2.50%</div>
+            <span class="status success">应显示为 2.50%</span>
+        </div>
+        <div class="product-card">
+            <strong>数脉稳健理财30天 (FT001)</strong>
+            <div class="rate-display">3.80%</div>
+            <span class="status success">应显示为 3.80%</span>
+        </div>
+        <div class="product-card">
+            <strong>数脉成长混合基金 (MF001)</strong>
+            <div class="rate-display">6.80%</div>
+            <span class="status success">应显示为 6.80%</span>
+        </div>
+        <div class="product-card">
+            <strong>数脉价值股票基金 (MF002)</strong>
+            <div class="rate-display">8.50%</div>
+            <span class="status success">应显示为 8.50%</span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>🚀 测试页面链接</h2>
+        <p class="description">直接访问相关页面验证修复效果</p>
+        <div>
+            <a href="http://localhost:5173/investments/products" class="test-button" target="_blank">
+                理财产品页面
+            </a>
+            <a href="http://localhost:5173/investments/recommendations" class="test-button" target="_blank">
+                产品推荐页面
+            </a>
+            <a href="http://localhost:5173/investments" class="test-button" target="_blank">
+                投资总览页面
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function formatPercentage(rate) {
+            if (typeof rate !== 'number' || isNaN(rate)) {
+                return '0.00%';
+            }
+            return `${(rate * 100).toFixed(2)}%`;
+        }
+
+        async function testProductsAPI() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>正在测试产品列表API...</p>';
+            
+            try {
+                const response = await fetch('/api/v1/investments/products');
+                const products = await response.json();
+                
+                let html = '<h3>产品列表API测试结果</h3>';
+                
+                products.slice(0, 5).forEach(product => {
+                    const rate = product.expected_return_rate;
+                    const formattedRate = formatPercentage(rate);
+                    const isValid = typeof rate === 'number' && rate > 0;
+                    
+                    html += `
+                        <div class="product-card">
+                            <strong>${product.name} (${product.product_code})</strong><br>
+                            <span>原始数据: ${JSON.stringify(rate)}</span><br>
+                            <span>格式化后: <span class="rate-display" style="font-size: 16px;">${formattedRate}</span></span><br>
+                            <span class="status ${isValid ? 'success' : 'error'}">
+                                ${isValid ? '✅ 数据格式正确' : '❌ 数据格式错误'}
+                            </span>
+                        </div>
+                    `;
+                });
+                
+                resultsDiv.innerHTML = html;
+            } catch (error) {
+                resultsDiv.innerHTML = `<p class="status error">API测试失败: ${error.message}</p>`;
+            }
+        }
+
+        async function testRecommendationsAPI() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>正在测试推荐API...</p>';
+            
+            try {
+                // 注意：这个API需要认证，可能会返回401
+                const response = await fetch('/api/v1/investments/recommendations');
+                
+                if (response.status === 401) {
+                    resultsDiv.innerHTML = `
+                        <div class="product-card">
+                            <h3>推荐API测试结果</h3>
+                            <p class="status error">需要登录才能测试推荐API</p>
+                            <p>请先登录系统，然后访问推荐页面进行测试</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const recommendations = await response.json();
+                
+                let html = '<h3>推荐API测试结果</h3>';
+                
+                recommendations.slice(0, 3).forEach(rec => {
+                    const rate = rec.product.expected_return_rate;
+                    const formattedRate = formatPercentage(rate);
+                    const isValid = typeof rate === 'number' && rate > 0;
+                    
+                    html += `
+                        <div class="product-card">
+                            <strong>${rec.product.name}</strong><br>
+                            <span>推荐评分: ${(rec.recommendation_score * 100).toFixed(0)}%</span><br>
+                            <span>预期收益率: <span class="rate-display" style="font-size: 16px;">${formattedRate}</span></span><br>
+                            <span class="status ${isValid ? 'success' : 'error'}">
+                                ${isValid ? '✅ 数据格式正确' : '❌ 数据格式错误'}
+                            </span>
+                        </div>
+                    `;
+                });
+                
+                resultsDiv.innerHTML = html;
+            } catch (error) {
+                resultsDiv.innerHTML = `<p class="status error">推荐API测试失败: ${error.message}</p>`;
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        // 页面加载时自动测试产品API
+        window.addEventListener('load', function() {
+            console.log('预期收益率验证工具已加载');
+            console.log('点击按钮测试API数据格式');
+        });
+    </script>
+</body>
+</html>

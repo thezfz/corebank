@@ -25,7 +25,7 @@ services:
       # Application configuration
       - API_HOST=${API_HOST:-0.0.0.0}
       - API_PORT=${API_PORT:-8000}
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LOG_LEVEL=${LOG_LEVEL:-DEBUG}
       - RELOAD=${RELOAD:-true}
       
       # Database configuration
@@ -87,32 +87,39 @@ services:
       retries: 5
       start_period: 30s
 
-# Named volumes for data persistence
-volumes:
-  postgres_data:
-    name: corebank_postgres_data
-  corebank_logs:
-    name: corebank_logs
-
-  # Frontend Service
+  # Frontend Service (Development mode with hot reload)
   frontend:
     build:
       context: ../corebank-frontend
-      dockerfile: Containerfile
+      dockerfile: Containerfile.dev
     container_name: corebank_frontend
+    environment:
+      - NODE_ENV=development
     ports:
-      - "3000:80"
+      - "3000:5173"
+    volumes:
+      # Mount entire source directory for hot reload
+      - ../corebank-frontend:/app:z
+      # Exclude node_modules to avoid conflicts
+      - /app/node_modules
     depends_on:
       - app
     networks:
       - corebank_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost/ || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:5173/ || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 30s
+
+# Named volumes for data persistence
+volumes:
+  postgres_data:
+    name: corebank_postgres_data
+  corebank_logs:
+    name: corebank_logs
 
 # Custom network
 networks:

@@ -156,6 +156,49 @@ async def transfer_funds(
         )
 
 
+@router.get("/recent", response_model=PaginatedResponse[TransactionResponse])
+async def get_recent_transactions(
+    current_user_id: Annotated[UUID, Depends(get_current_user_id)],
+    transaction_service: Annotated[TransactionService, Depends(get_transaction_service)],
+    page_size: int = Query(5, ge=1, le=50, description="Number of recent transactions to return")
+) -> PaginatedResponse[TransactionResponse]:
+    """
+    Get recent transactions across all user accounts.
+
+    Args:
+        current_user_id: Current user ID
+        transaction_service: Transaction service dependency
+        page_size: Number of recent transactions to return
+
+    Returns:
+        PaginatedResponse[TransactionResponse]: Recent transactions
+
+    Raises:
+        HTTPException: If retrieval fails
+    """
+    try:
+        pagination = PaginationParams(page=1, page_size=page_size)
+
+        transactions = await transaction_service.get_recent_transactions(
+            current_user_id, pagination
+        )
+
+        logger.debug(
+            f"Retrieved {page_size} recent transactions for user {current_user_id}"
+        )
+
+        return transactions
+
+    except Exception as e:
+        logger.error(
+            f"Failed to retrieve recent transactions for user {current_user_id}: {e}"
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve recent transactions"
+        )
+
+
 @router.get("/account/{account_id}", response_model=PaginatedResponse[TransactionResponse])
 async def get_account_transactions(
     account_id: UUID,

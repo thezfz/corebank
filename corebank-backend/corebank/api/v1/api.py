@@ -11,7 +11,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 
 from corebank.api.v1.dependencies import get_health_status
-from corebank.api.v1.endpoints import auth, accounts, transactions
+from corebank.api.v1.endpoints import auth, accounts, transactions, investments
 from corebank.models.common import HealthCheck
 from corebank.core.config import settings
 
@@ -24,6 +24,7 @@ api_router = APIRouter(prefix="/v1")
 api_router.include_router(auth.router)
 api_router.include_router(accounts.router)
 api_router.include_router(transactions.router)
+api_router.include_router(investments.router)
 
 
 @api_router.get("/health", response_model=HealthCheck, tags=["Health"])
@@ -70,8 +71,9 @@ async def api_info() -> dict:
         "description": "CoreBank API - Secure banking system backend",
         "endpoints": {
             "authentication": "/v1/auth",
-            "accounts": "/v1/accounts", 
+            "accounts": "/v1/accounts",
             "transactions": "/v1/transactions",
+            "investments": "/v1/investments",
             "health": "/v1/health"
         },
         "documentation": {

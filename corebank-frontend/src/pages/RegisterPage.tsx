@@ -251,7 +251,7 @@ export default function RegisterPage() {
 
       <div className="mt-6 text-center">
         <p className="text-xs text-gray-500">
-          © 2024 数脉银行. 安全数字银行平台.
+          © 2025 数脉银行. 安全数字银行平台.
         </p>
       </div>
     </div>

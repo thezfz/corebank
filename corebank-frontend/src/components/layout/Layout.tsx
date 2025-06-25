@@ -5,6 +5,7 @@ import {
   HomeIcon,
   CreditCardIcon,
   ArrowsRightLeftIcon,
+  ChartBarIcon,
   ArrowRightStartOnRectangleIcon
 } from '@heroicons/react/24/outline'
 
@@ -32,6 +33,7 @@ export default function Layout() {
     { name: '仪表板', href: '/dashboard', icon: HomeIcon },
     { name: '账户管理', href: '/accounts', icon: CreditCardIcon },
     { name: '交易记录', href: '/transactions', icon: ArrowsRightLeftIcon },
+    { name: '投资理财', href: '/investments', icon: ChartBarIcon },
   ]
 
   return (

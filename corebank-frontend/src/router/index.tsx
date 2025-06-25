@@ -9,6 +9,12 @@ const RegisterPage = lazy(() => import('../pages/RegisterPage'))
 const DashboardPage = lazy(() => import('../pages/DashboardPage'))
 const AccountsPage = lazy(() => import('../pages/AccountsPage'))
 const TransactionsPage = lazy(() => import('../pages/TransactionsPage'))
+const InvestmentDashboardPage = lazy(() => import('../pages/InvestmentDashboardPage'))
+const InvestmentProductsPage = lazy(() => import('../pages/InvestmentProductsPage'))
+const RiskAssessmentPage = lazy(() => import('../pages/RiskAssessmentPage'))
+const InvestmentHoldingsPage = lazy(() => import('../pages/InvestmentHoldingsPage'))
+const InvestmentTransactionsPage = lazy(() => import('../pages/InvestmentTransactionsPage'))
+const ProductRecommendationsPage = lazy(() => import('../pages/ProductRecommendationsPage'))
 
 // Router configuration
 const router = createBrowserRouter([
@@ -39,6 +45,30 @@ const router = createBrowserRouter([
       {
         path: 'transactions',
         element: <TransactionsPage />,
+      },
+      {
+        path: 'investments',
+        element: <InvestmentDashboardPage />,
+      },
+      {
+        path: 'investments/products',
+        element: <InvestmentProductsPage />,
+      },
+      {
+        path: 'investments/risk-assessment',
+        element: <RiskAssessmentPage />,
+      },
+      {
+        path: 'investments/holdings',
+        element: <InvestmentHoldingsPage />,
+      },
+      {
+        path: 'investments/transactions',
+        element: <InvestmentTransactionsPage />,
+      },
+      {
+        path: 'investments/recommendations',
+        element: <ProductRecommendationsPage />,
       },
     ],
   },

@@ -19,12 +19,12 @@ describe('格式化工具函数', () => {
 
   describe('formatDate', () => {
     it('应该正确格式化日期对象', () => {
-      const date = new Date('2024-01-15')
-      expect(formatDate(date)).toBe('2024/01/15')
+      const date = new Date('2025-01-15')
+      expect(formatDate(date)).toBe('2025/01/15')
     })
 
     it('应该正确格式化日期字符串', () => {
-      expect(formatDate('2024-12-25')).toBe('2024/12/25')
+      expect(formatDate('2025-12-25')).toBe('2025/12/25')
     })
   })
 

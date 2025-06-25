@@ -25,11 +25,12 @@ def configure_logging() -> None:
     # Remove default handler
     logger.remove()
     
-    # Configure console handler
+    # Configure console handler with more detailed format for debugging
     console_format = (
         "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | "
         "<level>{level: <8}</level> | "
-        "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - "
+        "<cyan>{name}</cyan>:<cyan>{file}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> | "
+        "<yellow>[{process}:{thread}]</yellow> - "
         "<level>{message}</level>"
     )
     
@@ -50,7 +51,8 @@ def configure_logging() -> None:
         file_format = (
             "{time:YYYY-MM-DD HH:mm:ss} | "
             "{level: <8} | "
-            "{name}:{function}:{line} - "
+            "{name}:{file}:{function}:{line} | "
+            "[{process}:{thread}] - "
             "{message}"
         )
         

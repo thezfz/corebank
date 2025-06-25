@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投资理财页面测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3b82f6;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 5px;
+            transition: background-color 0.2s;
+        }
+        .test-link:hover {
+            background-color: #2563eb;
+        }
+        .status {
+            margin-left: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .status.success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .status.error {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+        h1 {
+            color: #1f2937;
+            text-align: center;
+        }
+        h2 {
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+        .description {
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏦 数脉银行投资理财页面测试</h1>
+    
+    <div class="test-container">
+        <h2>📊 投资理财模块页面</h2>
+        <p class="description">点击下面的链接测试各个投资理财页面是否正常加载</p>
+        
+        <div>
+            <a href="http://localhost:5173/investments" class="test-link" target="_blank">
+                投资总览
+            </a>
+            <span class="status" id="dashboard-status">待测试</span>
+        </div>
+        
+        <div>
+            <a href="http://localhost:5173/investments/products" class="test-link" target="_blank">
+                理财产品
+            </a>
+            <span class="status" id="products-status">待测试</span>
+        </div>
+        
+        <div>
+            <a href="http://localhost:5173/investments/risk-assessment" class="test-link" target="_blank">
+                风险评估
+            </a>
+            <span class="status" id="risk-status">待测试</span>
+        </div>
+        
+        <div>
+            <a href="http://localhost:5173/investments/holdings" class="test-link" target="_blank">
+                我的持仓
+            </a>
+            <span class="status" id="holdings-status">待测试</span>
+        </div>
+        
+        <div>
+            <a href="http://localhost:5173/investments/transactions" class="test-link" target="_blank">
+                交易记录
+            </a>
+            <span class="status" id="transactions-status">待测试</span>
+        </div>
+
+        <div>
+            <a href="http://localhost:5173/investments/recommendations" class="test-link" target="_blank">
+                产品推荐
+            </a>
+            <span class="status" id="recommendations-status">待测试</span>
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <h2>🔐 测试账户信息</h2>
+        <p class="description">使用以下测试账户登录系统进行完整功能测试</p>
+        <ul>
+            <li><strong>用户名:</strong> investor</li>
+            <li><strong>密码:</strong> password123</li>
+            <li><strong>账户余额:</strong> ¥100,000（用于投资测试）</li>
+        </ul>
+    </div>
+    
+    <div class="test-container">
+        <h2>📊 功能说明</h2>
+        <p class="description">关键功能的说明和定义</p>
+        <ul>
+            <li><strong>近期交易：</strong> 显示用户所有账户中最近的5笔交易记录</li>
+            <li><strong>投资理财：</strong> 现已完全可用，包含产品浏览、风险评估、购买赎回等功能</li>
+            <li><strong>产品推荐：</strong> 基于风险评估结果的个性化产品推荐，包含推荐理由和建议配置</li>
+            <li><strong>实时数据：</strong> 所有数据都是实时从后端API获取，支持热重载</li>
+        </ul>
+    </div>
+
+    <div class="test-container">
+        <h2>✅ 测试流程建议</h2>
+        <p class="description">建议按以下顺序进行完整的投资功能测试</p>
+        <ol>
+            <li>登录系统（使用上述测试账户）</li>
+            <li>访问投资总览页面</li>
+            <li>完成风险评估问卷</li>
+            <li>浏览投资产品页面</li>
+            <li>购买理财产品</li>
+            <li>查看持仓和收益</li>
+            <li>查看交易记录</li>
+        </ol>
+    </div>
+    
+    <div class="test-container">
+        <h2>🚀 快速访问</h2>
+        <p class="description">直接访问主要功能页面</p>
+        <div>
+            <a href="http://localhost:5173/login" class="test-link" target="_blank">
+                登录页面
+            </a>
+            <a href="http://localhost:5173/dashboard" class="test-link" target="_blank">
+                主仪表板
+            </a>
+            <a href="http://localhost:5173/accounts" class="test-link" target="_blank">
+                账户管理
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // 简单的状态检查脚本
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('投资理财页面测试工具已加载');
+            console.log('请点击上方链接测试各个页面功能');
+        });
+    </script>
+</body>
+</html>
