@@ -65,7 +65,9 @@ class AccountResponse(AccountBase):
         description="Current account balance"
     )
     created_at: datetime = Field(..., description="Account creation timestamp")
-    
+    username: Optional[str] = Field(None, description="Account owner username")
+    real_name: Optional[str] = Field(None, description="Account owner real name")
+
     class Config:
         """Pydantic configuration."""
         from_attributes = True

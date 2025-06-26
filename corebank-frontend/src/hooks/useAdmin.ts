@@ -22,10 +22,10 @@ export function useSystemStatistics() {
 }
 
 // Get all users with pagination
-export function useAllUsers(page: number = 1, pageSize: number = 20, role?: string) {
+export function useAllUsers(page: number = 1, pageSize: number = 20, role?: string, status: string = 'active', search?: string) {
   return useQuery({
-    queryKey: adminKeys.usersList(page, role),
-    queryFn: () => apiClient.getAllUsers(page, pageSize, role),
+    queryKey: [...adminKeys.usersList(page, role), status, search],
+    queryFn: () => apiClient.getAllUsers(page, pageSize, role, status, search),
     staleTime: 1 * 60 * 1000, // 1 minute
   })
 }
@@ -45,24 +45,24 @@ export function useUpdateUserRole() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ userId, newRole }: { userId: string; newRole: string }) => 
+    mutationFn: ({ userId, newRole }: { userId: string; newRole: string }) =>
       apiClient.updateUserRole(userId, newRole),
     onSuccess: (_, { userId }) => {
       // Invalidate user detail
-      queryClient.invalidateQueries({ 
-        queryKey: adminKeys.userDetail(userId) 
+      queryClient.invalidateQueries({
+        queryKey: adminKeys.userDetail(userId)
       })
-      
+
       // Invalidate users list
-      queryClient.invalidateQueries({ 
-        queryKey: adminKeys.users() 
+      queryClient.invalidateQueries({
+        queryKey: adminKeys.users()
       })
-      
+
       // Invalidate statistics
-      queryClient.invalidateQueries({ 
-        queryKey: adminKeys.statistics() 
+      queryClient.invalidateQueries({
+        queryKey: adminKeys.statistics()
       })
-      
+
       console.log('User role updated successfully')
     },
     onError: (error: AxiosError<ApiError>) => {
@@ -71,15 +71,86 @@ export function useUpdateUserRole() {
   })
 }
 
+
+
+// Soft delete user mutation
+export function useSoftDeleteUser() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ userId, reason }: { userId: string; reason: string }) =>
+      apiClient.softDeleteUser(userId, reason),
+    onSuccess: () => {
+      // Invalidate users list
+      queryClient.invalidateQueries({
+        queryKey: adminKeys.users()
+      })
+
+      // Invalidate statistics
+      queryClient.invalidateQueries({
+        queryKey: adminKeys.statistics()
+      })
+
+      console.log('User deleted successfully')
+    },
+    onError: (error: AxiosError<ApiError>) => {
+      console.error('Failed to delete user:', error)
+    }
+  })
+}
+
+// Restore user mutation
+export function useRestoreUser() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ userId, reason }: { userId: string; reason: string }) =>
+      apiClient.restoreUser(userId, reason),
+    onSuccess: (_, { userId }) => {
+      // Invalidate user detail
+      queryClient.invalidateQueries({
+        queryKey: adminKeys.userDetail(userId)
+      })
+
+      // Invalidate users list
+      queryClient.invalidateQueries({
+        queryKey: adminKeys.users()
+      })
+
+      // Invalidate statistics
+      queryClient.invalidateQueries({
+        queryKey: adminKeys.statistics()
+      })
+
+      console.log('User restored successfully')
+    },
+    onError: (error: AxiosError<ApiError>) => {
+      console.error('Failed to restore user:', error)
+    }
+  })
+}
+
 // Admin operations hook
 export function useAdminOperations() {
   const updateUserRoleMutation = useUpdateUserRole()
+  const softDeleteUserMutation = useSoftDeleteUser()
+  const restoreUserMutation = useRestoreUser()
 
   return {
     // User role management
     updateUserRole: updateUserRoleMutation.mutate,
     isUpdatingUserRole: updateUserRoleMutation.isPending,
     updateUserRoleError: updateUserRoleMutation.error,
+
+    // User deletion
+    softDeleteUser: softDeleteUserMutation.mutate,
+    isDeletingUser: softDeleteUserMutation.isPending,
+    deleteUserError: softDeleteUserMutation.error,
+
+    // User restoration
+    restoreUser: restoreUserMutation.mutate,
+    isRestoringUser: restoreUserMutation.isPending,
+    restoreUserError: restoreUserMutation.error,
     
     // Helper functions
     parseAdminError: (error: unknown): string[] => {

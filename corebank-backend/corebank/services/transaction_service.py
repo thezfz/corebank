@@ -688,3 +688,56 @@ class TransactionService:
         except Exception as e:
             logger.error(f"Transfer by account number failed for user {user_id}: {e}")
             raise RuntimeError(f"Transfer transaction failed: {str(e)}")
+
+    # Admin-only methods
+
+    async def get_all_transactions_for_admin(
+        self,
+        pagination: PaginationParams,
+        account_id: Optional[str] = None,
+        transaction_type: Optional[str] = None,
+        user_search: Optional[str] = None
+    ) -> PaginatedResponse[EnhancedTransactionResponse]:
+        """
+        Get all transactions in the system for admin monitoring.
+
+        Args:
+            pagination: Pagination parameters
+            account_id: Optional account ID filter
+            transaction_type: Optional transaction type filter
+            user_search: Optional user search term
+
+        Returns:
+            PaginatedResponse[EnhancedTransactionResponse]: Paginated transaction list
+        """
+        transactions_data = await self.repository.get_all_transactions_for_admin(
+            limit=pagination.page_size,
+            offset=pagination.offset,
+            account_id=account_id,
+            transaction_type=transaction_type,
+            user_search=user_search
+        )
+
+        transactions = [EnhancedTransactionResponse(**transaction) for transaction in transactions_data]
+
+        # Get total count
+        total_count = await self.repository.count_all_transactions_for_admin(
+            account_id=account_id,
+            transaction_type=transaction_type,
+            user_search=user_search
+        )
+
+        return PaginatedResponse.create(
+            items=transactions,
+            total_count=total_count,
+            pagination=pagination
+        )
+
+    async def get_transaction_statistics(self) -> dict:
+        """
+        Get transaction statistics for admin dashboard.
+
+        Returns:
+            dict: Transaction statistics
+        """
+        return await self.repository.get_transaction_statistics()

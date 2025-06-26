@@ -277,3 +277,13 @@ class AccountService:
             account_type=AccountType(account['account_type']),
             owner_name=owner_name
         )
+
+    async def get_all_accounts(self) -> list[AccountResponse]:
+        """
+        Get all accounts in the system (admin only).
+
+        Returns:
+            list[AccountResponse]: List of all accounts
+        """
+        accounts = await self.repository.get_all_accounts()
+        return [AccountResponse(**account) for account in accounts]

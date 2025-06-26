@@ -4,7 +4,11 @@ import {
   MagnifyingGlassIcon,
   FunnelIcon,
   ChevronLeftIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  EyeIcon,
+  TrashIcon,
+  ChevronDownIcon,
+  ArrowPathIcon
 } from '@heroicons/react/24/outline'
 import { useAllUsers, useAdminOperations } from '../../hooks/useAdmin'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
@@ -14,9 +18,16 @@ interface User {
   username: string
   role: 'user' | 'admin'
   created_at: string
+  updated_at?: string
+  is_active: boolean
+  deleted_at?: string
+  last_login_at?: string
   real_name?: string
   phone?: string
   email?: string
+  account_count?: number
+  total_balance?: string
+  investment_count?: number
 }
 
 interface PaginatedUsers {
@@ -32,24 +43,79 @@ interface PaginatedUsers {
 export default function UserManagement() {
   const [currentPage, setCurrentPage] = useState(1)
   const [roleFilter, setRoleFilter] = useState<string>('')
+  const [statusFilter, setStatusFilter] = useState<string>('active')
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const [showUserDetail, setShowUserDetail] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showRestoreModal, setShowRestoreModal] = useState(false)
+  const [deleteReason, setDeleteReason] = useState('')
+  const [restoreReason, setRestoreReason] = useState('')
 
-  const { data: users, isLoading, error } = useAllUsers(currentPage, 20, roleFilter || undefined)
-  const { updateUserRole, isUpdatingUserRole } = useAdminOperations()
+  const { data: users, isLoading, error, refetch } = useAllUsers(currentPage, 20, roleFilter || undefined, statusFilter, searchTerm.trim() || undefined)
+  const { updateUserRole, softDeleteUser, restoreUser, isUpdatingUserRole } = useAdminOperations()
 
   const handleRoleChange = (userId: string, newRole: string) => {
-    updateUserRole({ userId, newRole })
+    updateUserRole({ userId, newRole }).then(() => {
+      refetch()
+    })
   }
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
   }
 
-  const filteredUsers = users?.items.filter(user =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.real_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || []
+  const handleViewDetail = (user: User) => {
+    setSelectedUser(user)
+    setShowUserDetail(true)
+  }
+
+  const handleDelete = (user: User) => {
+    setSelectedUser(user)
+    setShowDeleteModal(true)
+  }
+
+  const handleRestore = (user: User) => {
+    setSelectedUser(user)
+    setShowRestoreModal(true)
+  }
+
+  const confirmDelete = async () => {
+    if (!selectedUser || !deleteReason.trim()) return
+
+    try {
+      await softDeleteUser({
+        userId: selectedUser.id,
+        reason: deleteReason
+      })
+      setShowDeleteModal(false)
+      setDeleteReason('')
+      setSelectedUser(null)
+      refetch()
+    } catch (error) {
+      console.error('Failed to delete user:', error)
+    }
+  }
+
+  const confirmRestore = async () => {
+    if (!selectedUser || !restoreReason.trim()) return
+
+    try {
+      await restoreUser({
+        userId: selectedUser.id,
+        reason: restoreReason
+      })
+      setShowRestoreModal(false)
+      setRestoreReason('')
+      setSelectedUser(null)
+      refetch()
+    } catch (error) {
+      console.error('Failed to restore user:', error)
+    }
+  }
+
+  // 服务器端已经处理了搜索，直接使用返回的数据
+  const filteredUsers = users?.items || []
 
   if (isLoading) {
     return (
@@ -84,16 +150,35 @@ export default function UserManagement() {
                 <input
                   type="text"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value)
+                    setCurrentPage(1) // 搜索时重置到第一页
+                  }}
                   className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
                   placeholder="搜索用户名、姓名或邮箱..."
                 />
               </div>
             </div>
 
-            {/* Role Filter */}
+            {/* Status Filter */}
             <div className="flex items-center space-x-2">
               <FunnelIcon className="h-5 w-5 text-gray-400" />
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value)
+                  setCurrentPage(1)
+                }}
+                className="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+              >
+                <option value="active">活跃用户</option>
+                <option value="deleted">已删除用户</option>
+                <option value="all">全部用户</option>
+              </select>
+            </div>
+
+            {/* Role Filter */}
+            <div className="flex items-center space-x-2">
               <select
                 value={roleFilter}
                 onChange={(e) => {
@@ -119,7 +204,10 @@ export default function UserManagement() {
               用户列表
             </h3>
             <div className="text-sm text-gray-500">
-              共 {users?.total_count || 0} 个用户
+              {searchTerm.trim()
+                ? `找到 ${filteredUsers.length} 个匹配用户`
+                : `共 ${users?.total_count || 0} 个用户`
+              }
             </div>
           </div>
 
@@ -132,9 +220,13 @@ export default function UserManagement() {
           ) : filteredUsers.length === 0 ? (
             <div className="text-center py-12">
               <UsersIcon className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">没有找到用户</h3>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                {searchTerm.trim() ? '没有找到匹配的用户' : '没有找到用户'}
+              </h3>
               <p className="mt-1 text-sm text-gray-500">
-                {searchTerm ? '尝试调整搜索条件' : '系统中暂无用户'}
+                {searchTerm.trim()
+                  ? '尝试调整搜索条件或清空搜索框查看所有用户'
+                  : '系统中暂无用户'}
               </p>
             </div>
           ) : (
@@ -147,6 +239,12 @@ export default function UserManagement() {
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       角色
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      状态
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      账户信息
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       注册时间
@@ -196,16 +294,62 @@ export default function UserManagement() {
                           <option value="admin">管理员</option>
                         </select>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            user.is_active
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {user.is_active ? '正常' : '禁用'}
+                          </span>
+                          {user.last_login_at && (
+                            <span className="ml-2 text-xs text-gray-500">
+                              最后登录: {new Date(user.last_login_at).toLocaleDateString('zh-CN')}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div className="space-y-1">
+                          <div>账户: {user.account_count || 0} 个</div>
+                          <div>余额: ¥{user.total_balance || '0.00'}</div>
+                          <div>投资: {user.investment_count || 0} 个</div>
+                        </div>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(user.created_at).toLocaleDateString('zh-CN')}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => window.location.href = `/admin/users/${user.id}`}
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          查看详情
-                        </button>
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => handleViewDetail(user)}
+                            className="text-indigo-600 hover:text-indigo-900 flex items-center"
+                            title="查看详情"
+                          >
+                            <EyeIcon className="h-4 w-4" />
+                          </button>
+
+                          {user.deleted_at ? (
+                            // 已删除用户：显示恢复按钮
+                            <button
+                              onClick={() => handleRestore(user)}
+                              className="text-green-600 hover:text-green-900 flex items-center"
+                              title="恢复用户"
+                            >
+                              <ArrowPathIcon className="h-4 w-4" />
+                            </button>
+                          ) : (
+                            // 活跃用户：显示删除按钮
+                            <button
+                              onClick={() => handleDelete(user)}
+                              className="text-red-600 hover:text-red-900 flex items-center"
+                              title="删除用户"
+                            >
+                              <TrashIcon className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -269,6 +413,181 @@ export default function UserManagement() {
           )}
         </div>
       </div>
+
+      {/* User Detail Modal */}
+      {showUserDetail && selectedUser && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">用户详情</h3>
+                <button
+                  onClick={() => setShowUserDetail(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <span className="sr-only">关闭</span>
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">用户名</label>
+                    <p className="mt-1 text-sm text-gray-900">{selectedUser.username}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">真实姓名</label>
+                    <p className="mt-1 text-sm text-gray-900">{selectedUser.real_name || '未设置'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">角色</label>
+                    <p className="mt-1 text-sm text-gray-900">
+                      {selectedUser.role === 'admin' ? '管理员' : '普通用户'}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">状态</label>
+                    <p className="mt-1 text-sm text-gray-900">
+                      {selectedUser.is_active ? '正常' : '禁用'}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">手机号</label>
+                    <p className="mt-1 text-sm text-gray-900">
+                      {selectedUser.phone ? selectedUser.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '未设置'}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">邮箱</label>
+                    <p className="mt-1 text-sm text-gray-900">{selectedUser.email || '未设置'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">账户数量</label>
+                    <p className="mt-1 text-sm text-gray-900">{selectedUser.account_count || 0} 个</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">总余额</label>
+                    <p className="mt-1 text-sm text-gray-900">¥{selectedUser.total_balance || '0.00'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">投资产品</label>
+                    <p className="mt-1 text-sm text-gray-900">{selectedUser.investment_count || 0} 个</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">注册时间</label>
+                    <p className="mt-1 text-sm text-gray-900">
+                      {new Date(selectedUser.created_at).toLocaleString('zh-CN')}
+                    </p>
+                  </div>
+                  {selectedUser.last_login_at && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">最后登录</label>
+                      <p className="mt-1 text-sm text-gray-900">
+                        {new Date(selectedUser.last_login_at).toLocaleString('zh-CN')}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
+      {/* Delete Modal */}
+      {showDeleteModal && selectedUser && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">删除用户</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                您确定要删除用户 "{selectedUser.username}" 吗？此操作不可撤销。
+              </p>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  删除原因 <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={deleteReason}
+                  onChange={(e) => setDeleteReason(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  rows={3}
+                  placeholder="请输入删除原因..."
+                  required
+                />
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false)
+                    setDeleteReason('')
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  disabled={!deleteReason.trim()}
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  确认删除
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Restore Modal */}
+      {showRestoreModal && selectedUser && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">恢复用户</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                您确定要恢复用户 "{selectedUser.username}" 吗？恢复后用户将重新激活。
+              </p>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  恢复原因 <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={restoreReason}
+                  onChange={(e) => setRestoreReason(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  rows={3}
+                  placeholder="请输入恢复原因..."
+                  required
+                />
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => {
+                    setShowRestoreModal(false)
+                    setRestoreReason('')
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={confirmRestore}
+                  disabled={!restoreReason.trim()}
+                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  确认恢复
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

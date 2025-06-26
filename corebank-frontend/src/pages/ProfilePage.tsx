@@ -18,8 +18,23 @@ export default function ProfilePage() {
 
   // Initialize form data when user profile loads
   useEffect(() => {
-    if (userProfile?.profile) {
-      setFormData(userProfile.profile)
+    if (userProfile) {
+      // Extract profile fields from the flattened user profile
+      const profileData = {
+        real_name: userProfile.real_name,
+        english_name: userProfile.english_name,
+        id_type: userProfile.id_type,
+        id_number: userProfile.id_number,
+        country: userProfile.country,
+        ethnicity: userProfile.ethnicity,
+        gender: userProfile.gender,
+        birth_date: userProfile.birth_date,
+        birth_place: userProfile.birth_place,
+        phone: userProfile.phone,
+        email: userProfile.email,
+        address: userProfile.address
+      }
+      setFormData(profileData)
     }
   }, [userProfile])
 
@@ -45,8 +60,23 @@ export default function ProfilePage() {
   }
 
   const handleCancel = () => {
-    if (userProfile?.profile) {
-      setFormData(userProfile.profile)
+    if (userProfile) {
+      // Extract profile fields from the flattened user profile
+      const profileData = {
+        real_name: userProfile.real_name,
+        english_name: userProfile.english_name,
+        id_type: userProfile.id_type,
+        id_number: userProfile.id_number,
+        country: userProfile.country,
+        ethnicity: userProfile.ethnicity,
+        gender: userProfile.gender,
+        birth_date: userProfile.birth_date,
+        birth_place: userProfile.birth_place,
+        phone: userProfile.phone,
+        email: userProfile.email,
+        address: userProfile.address
+      }
+      setFormData(profileData)
     }
     setIsEditing(false)
   }
@@ -197,7 +227,7 @@ export default function ProfilePage() {
                 />
               ) : (
                 <div className="text-gray-900">
-                  {userProfile?.profile?.real_name || '柏·明'}
+                  {userProfile?.real_name || '未设置'}
                 </div>
               )}
             </div>
@@ -215,7 +245,7 @@ export default function ProfilePage() {
                 />
               ) : (
                 <div className="text-gray-900">
-                  {userProfile?.profile?.english_name || 'B*******G'}
+                  {userProfile?.english_name || '未设置'}
                 </div>
               )}
             </div>
@@ -242,7 +272,7 @@ export default function ProfilePage() {
                 </select>
               ) : (
                 <div className="text-gray-900">
-                  {userProfile?.profile?.id_type || '居民身份证'}
+                  {userProfile?.id_type || '未设置'}
                 </div>
               )}
             </div>
@@ -260,7 +290,7 @@ export default function ProfilePage() {
                 />
               ) : (
                 <div className="text-gray-900">
-                  {userProfile?.profile?.id_number || '5***************9'}
+                  {userProfile?.id_number || '未设置'}
                 </div>
               )}
             </div>
@@ -282,7 +312,7 @@ export default function ProfilePage() {
                 />
               ) : (
                 <div className="text-gray-900">
-                  {userProfile?.profile?.country || '中国'}
+                  {userProfile?.country || '未设置'}
                 </div>
               )}
             </div>
@@ -300,7 +330,7 @@ export default function ProfilePage() {
                 />
               ) : (
                 <div className="text-gray-900">
-                  {userProfile?.profile?.ethnicity || '汉族'}
+                  {userProfile?.ethnicity || '未设置'}
                 </div>
               )}
             </div>
@@ -323,7 +353,7 @@ export default function ProfilePage() {
                 </select>
               ) : (
                 <div className="text-gray-900">
-                  {userProfile?.profile?.gender || '男'}
+                  {userProfile?.gender || '未设置'}
                 </div>
               )}
             </div>
@@ -340,7 +370,7 @@ export default function ProfilePage() {
                 />
               ) : (
                 <div className="text-gray-900">
-                  {userProfile?.profile?.birth_date || '2001/01/22'}
+                  {userProfile?.birth_date || '未设置'}
                 </div>
               )}
             </div>
@@ -360,7 +390,7 @@ export default function ProfilePage() {
               />
             ) : (
               <div className="text-gray-900">
-                {userProfile?.profile?.birth_place || '四川省达州市通川区'}
+                {userProfile?.birth_place || '未设置'}
               </div>
             )}
           </div>
@@ -387,7 +417,7 @@ export default function ProfilePage() {
               />
             ) : (
               <div className="text-gray-900">
-                {userProfile?.profile?.address || '四川省达州市通川区'}
+                {userProfile?.address || '未设置'}
               </div>
             )}
           </div>
@@ -407,7 +437,7 @@ export default function ProfilePage() {
                 />
               ) : (
                 <div className="text-gray-900">
-                  {userProfile?.profile?.phone || '138****5678'}
+                  {userProfile?.phone || '未设置'}
                 </div>
               )}
             </div>
@@ -425,7 +455,7 @@ export default function ProfilePage() {
                 />
               ) : (
                 <div className="text-gray-900">
-                  {userProfile?.profile?.email || 'user@example.com'}
+                  {userProfile?.email || '未设置'}
                 </div>
               )}
             </div>

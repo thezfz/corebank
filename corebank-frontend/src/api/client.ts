@@ -253,14 +253,19 @@ class ApiClient {
     return response.data
   }
 
-  async getAllUsers(page: number = 1, pageSize: number = 20, role?: string): Promise<PaginatedResponse<any>> {
+  async getAllUsers(page: number = 1, pageSize: number = 20, role?: string, status: string = 'active', search?: string): Promise<PaginatedResponse<any>> {
     const params = new URLSearchParams({
       page: page.toString(),
-      page_size: pageSize.toString()
+      page_size: pageSize.toString(),
+      status: status
     })
 
     if (role) {
       params.append('role', role)
+    }
+
+    if (search) {
+      params.append('search', search)
     }
 
     const response = await this.client.get(`/admin/users?${params}`)
@@ -272,8 +277,46 @@ class ApiClient {
     return response.data
   }
 
+
+
+  async softDeleteUser(userId: string, reason: string): Promise<any> {
+    const response = await this.client.delete(`/admin/users/${userId}`, {
+      data: { reason }
+    })
+    return response.data
+  }
+
+  async restoreUser(userId: string, reason: string): Promise<any> {
+    const response = await this.client.post(`/admin/users/${userId}/restore`, {
+      reason: reason
+    })
+    return response.data
+  }
+
   async updateUserRole(userId: string, newRole: string): Promise<any> {
     const response = await this.client.put(`/admin/users/${userId}/role`, newRole)
+    return response.data
+  }
+
+  // Admin transaction monitoring
+  async getAllAccounts(): Promise<any[]> {
+    const response = await this.client.get('/admin/accounts')
+    return response.data
+  }
+
+  async getAllTransactions(params: {
+    page?: number
+    page_size?: number
+    account_id?: string
+    transaction_type?: string
+    user_search?: string
+  }): Promise<PaginatedResponse<any>> {
+    const response = await this.client.get('/admin/transactions', { params })
+    return response.data
+  }
+
+  async getTransactionStatistics(): Promise<any> {
+    const response = await this.client.get('/admin/transaction-statistics')
     return response.data
   }
 }

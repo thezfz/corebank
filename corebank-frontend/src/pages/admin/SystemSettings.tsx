@@ -1,8 +1,8 @@
 import React from 'react'
-import { 
+import {
   CogIcon,
   ShieldCheckIcon,
-  DatabaseIcon,
+  CircleStackIcon,
   BellIcon,
   ChartBarIcon,
   ExclamationTriangleIcon
@@ -37,7 +37,7 @@ export default function SystemSettings() {
     {
       title: '数据库设置',
       description: '数据库连接和性能配置',
-      icon: DatabaseIcon,
+      icon: CircleStackIcon,
       color: 'bg-green-500',
       items: [
         { name: '连接池大小', value: '20', editable: true },

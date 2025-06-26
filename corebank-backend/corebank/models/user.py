@@ -57,6 +57,9 @@ class UserResponse(UserBase):
     id: UUID = Field(..., description="User unique identifier")
     role: UserRole = Field(default=UserRole.USER, description="User role")
     created_at: datetime = Field(..., description="User creation timestamp")
+    is_active: bool = Field(default=True, description="User active status")
+    deleted_at: Optional[datetime] = Field(None, description="User deletion timestamp")
+    last_login_at: Optional[datetime] = Field(None, description="Last login timestamp")
 
     class Config:
         """Pydantic configuration."""
@@ -140,6 +143,25 @@ class UserDetailResponse(UserResponse):
     phone: Optional[str] = Field(None, description="手机号码")
     email: Optional[str] = Field(None, description="邮箱地址")
     address: Optional[str] = Field(None, description="联系地址")
+
+    # Additional fields for admin view
+    account_count: Optional[int] = Field(None, description="账户数量")
+    total_balance: Optional[str] = Field(None, description="总余额")
+    investment_count: Optional[int] = Field(None, description="投资产品数量")
+
+
+
+
+class UserSoftDelete(BaseModel):
+    """Model for user soft delete requests."""
+
+    reason: str = Field(..., max_length=500, description="Deletion reason")
+
+
+class UserRestore(BaseModel):
+    """Model for user restore requests."""
+
+    reason: str = Field(..., max_length=500, description="Restoration reason")
     profile_created_at: Optional[datetime] = Field(None, description="Profile creation timestamp")
     profile_updated_at: Optional[datetime] = Field(None, description="Profile last update timestamp")
 

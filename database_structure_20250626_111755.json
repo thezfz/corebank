@@ -1,0 +1,3905 @@
+{
+  "timestamp": "20250626_111755",
+  "tables": {
+    "accounts": {
+      "table_name": "accounts",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": "gen_random_uuid()",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "account_number",
+          "data_type": "character varying",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": 20,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "user_id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_table": "users",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "account_type",
+          "data_type": "USER-DEFINED",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "balance",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": "0.0000",
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "accounts_account_number_key",
+          "table_name": "accounts",
+          "column_names": [
+            "account_number"
+          ],
+          "is_unique": true,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "accounts_pkey",
+          "table_name": "accounts",
+          "column_names": [
+            "id"
+          ],
+          "is_unique": true,
+          "is_primary": true,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_accounts_type",
+          "table_name": "accounts",
+          "column_names": [
+            "account_type"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_accounts_updated_at",
+          "table_name": "accounts",
+          "column_names": [
+            "updated_at"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_accounts_user_id",
+          "table_name": "accounts",
+          "column_names": [
+            "user_id"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        }
+      ],
+      "row_count": 9,
+      "table_size": "88 kB",
+      "constraints": [
+        {
+          "constraint_name": "2200_16401_1_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16401_2_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16401_3_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16401_4_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16401_5_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16401_6_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16401_7_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "accounts_account_type_check",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "accounts",
+          "foreign_column_name": "account_type",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "accounts_balance_check",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "accounts",
+          "foreign_column_name": "balance",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "accounts_user_id_fkey",
+          "constraint_type": "FOREIGN KEY",
+          "column_name": "user_id",
+          "foreign_table_name": "users",
+          "foreign_column_name": "id",
+          "match_option": "NONE",
+          "update_rule": "NO ACTION",
+          "delete_rule": "CASCADE"
+        },
+        {
+          "constraint_name": "accounts_pkey",
+          "constraint_type": "PRIMARY KEY",
+          "column_name": "id",
+          "foreign_table_name": "accounts",
+          "foreign_column_name": "id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "accounts_account_number_key",
+          "constraint_type": "UNIQUE",
+          "column_name": "account_number",
+          "foreign_table_name": "accounts",
+          "foreign_column_name": "account_number",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        }
+      ]
+    },
+    "alembic_version": {
+      "table_name": "alembic_version",
+      "columns": [
+        {
+          "column_name": "version_num",
+          "data_type": "character varying",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": 32,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "alembic_version_pkc",
+          "table_name": "alembic_version",
+          "column_names": [
+            "version_num"
+          ],
+          "is_unique": true,
+          "is_primary": true,
+          "index_type": "btree"
+        }
+      ],
+      "row_count": 2,
+      "table_size": "24 kB",
+      "constraints": [
+        {
+          "constraint_name": "2200_16448_1_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "alembic_version_pkc",
+          "constraint_type": "PRIMARY KEY",
+          "column_name": "version_num",
+          "foreign_table_name": "alembic_version",
+          "foreign_column_name": "version_num",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        }
+      ]
+    },
+    "investment_holdings": {
+      "table_name": "investment_holdings",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": "gen_random_uuid()",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "user_id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_table": "users",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "account_id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_table": "accounts",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "product_id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_table": "investment_products",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "shares",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": "0",
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 8,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "average_cost",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "total_invested",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": "0",
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "current_value",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": "0",
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "unrealized_gain_loss",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": "0",
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "realized_gain_loss",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": "0",
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "purchase_date",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "maturity_date",
+          "data_type": "timestamp with time zone",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "status",
+          "data_type": "USER-DEFINED",
+          "is_nullable": false,
+          "column_default": "'active'::holding_status_enum",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "idx_investment_holdings_account",
+          "table_name": "investment_holdings",
+          "column_names": [
+            "account_id"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_holdings_maturity",
+          "table_name": "investment_holdings",
+          "column_names": [
+            "maturity_date"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_holdings_product",
+          "table_name": "investment_holdings",
+          "column_names": [
+            "product_id"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_holdings_product_status",
+          "table_name": "investment_holdings",
+          "column_names": [
+            "product_id",
+            "status"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_holdings_status",
+          "table_name": "investment_holdings",
+          "column_names": [
+            "status"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_holdings_user",
+          "table_name": "investment_holdings",
+          "column_names": [
+            "user_id"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_holdings_user_status",
+          "table_name": "investment_holdings",
+          "column_names": [
+            "user_id",
+            "status"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "investment_holdings_pkey",
+          "table_name": "investment_holdings",
+          "column_names": [
+            "id"
+          ],
+          "is_unique": true,
+          "is_primary": true,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "uq_user_account_product_purchase",
+          "table_name": "investment_holdings",
+          "column_names": [
+            "user_id",
+            "account_id",
+            "product_id",
+            "purchase_date"
+          ],
+          "is_unique": true,
+          "is_primary": false,
+          "index_type": "btree"
+        }
+      ],
+      "row_count": 7,
+      "table_size": "152 kB",
+      "constraints": [
+        {
+          "constraint_name": "2200_16502_10_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16502_11_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16502_13_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16502_14_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16502_15_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16502_1_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16502_2_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16502_3_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16502_4_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16502_5_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16502_6_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16502_7_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16502_8_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16502_9_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_average_cost_positive",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "average_cost",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_current_value_non_negative",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "current_value",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_shares_non_negative",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "shares",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_total_invested_non_negative",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "total_invested",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_valid_holding_status",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "status",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "investment_holdings_account_id_fkey",
+          "constraint_type": "FOREIGN KEY",
+          "column_name": "account_id",
+          "foreign_table_name": "accounts",
+          "foreign_column_name": "id",
+          "match_option": "NONE",
+          "update_rule": "NO ACTION",
+          "delete_rule": "CASCADE"
+        },
+        {
+          "constraint_name": "investment_holdings_product_id_fkey",
+          "constraint_type": "FOREIGN KEY",
+          "column_name": "product_id",
+          "foreign_table_name": "investment_products",
+          "foreign_column_name": "id",
+          "match_option": "NONE",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        },
+        {
+          "constraint_name": "investment_holdings_user_id_fkey",
+          "constraint_type": "FOREIGN KEY",
+          "column_name": "user_id",
+          "foreign_table_name": "users",
+          "foreign_column_name": "id",
+          "match_option": "NONE",
+          "update_rule": "NO ACTION",
+          "delete_rule": "CASCADE"
+        },
+        {
+          "constraint_name": "investment_holdings_pkey",
+          "constraint_type": "PRIMARY KEY",
+          "column_name": "id",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "product_id",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "account_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "purchase_date",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "user_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "account_id",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "purchase_date",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "account_id",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "product_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "account_id",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "account_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "account_id",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "user_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "user_id",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "purchase_date",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "user_id",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "product_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "user_id",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "account_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "user_id",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "user_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "product_id",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "user_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "purchase_date",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "account_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "purchase_date",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "product_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "purchase_date",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "purchase_date",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "product_id",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "purchase_date",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_account_product_purchase",
+          "constraint_type": "UNIQUE",
+          "column_name": "product_id",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "product_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        }
+      ]
+    },
+    "investment_products": {
+      "table_name": "investment_products",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": "gen_random_uuid()",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "product_code",
+          "data_type": "character varying",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "name",
+          "data_type": "character varying",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": 200,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "product_type",
+          "data_type": "USER-DEFINED",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "risk_level",
+          "data_type": "integer",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "expected_return_rate",
+          "data_type": "numeric",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 5,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "min_investment_amount",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": "1.0000",
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "max_investment_amount",
+          "data_type": "numeric",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "investment_period_days",
+          "data_type": "integer",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "is_active",
+          "data_type": "boolean",
+          "is_nullable": false,
+          "column_default": "true",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "description",
+          "data_type": "text",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "features",
+          "data_type": "jsonb",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "idx_investment_products_active",
+          "table_name": "investment_products",
+          "column_names": [
+            "is_active"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_products_active_type",
+          "table_name": "investment_products",
+          "column_names": [
+            "product_type",
+            "is_active"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_products_code",
+          "table_name": "investment_products",
+          "column_names": [
+            "product_code"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_products_risk",
+          "table_name": "investment_products",
+          "column_names": [
+            "risk_level"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_products_type",
+          "table_name": "investment_products",
+          "column_names": [
+            "product_type"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_products_type_risk",
+          "table_name": "investment_products",
+          "column_names": [
+            "product_type",
+            "risk_level"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "investment_products_pkey",
+          "table_name": "investment_products",
+          "column_names": [
+            "id"
+          ],
+          "is_unique": true,
+          "is_primary": true,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "investment_products_product_code_key",
+          "table_name": "investment_products",
+          "column_names": [
+            "product_code"
+          ],
+          "is_unique": true,
+          "is_primary": false,
+          "index_type": "btree"
+        }
+      ],
+      "row_count": 6,
+      "table_size": "144 kB",
+      "constraints": [
+        {
+          "constraint_name": "2200_16453_10_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16453_13_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16453_14_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16453_1_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16453_2_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16453_3_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16453_4_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16453_5_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16453_7_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_investment_period_positive",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_products",
+          "foreign_column_name": "investment_period_days",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_max_investment_valid",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_products",
+          "foreign_column_name": "max_investment_amount",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_max_investment_valid",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_products",
+          "foreign_column_name": "min_investment_amount",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_min_investment_positive",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_products",
+          "foreign_column_name": "min_investment_amount",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_risk_level",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_products",
+          "foreign_column_name": "risk_level",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_valid_product_type",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_products",
+          "foreign_column_name": "product_type",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "investment_products_pkey",
+          "constraint_type": "PRIMARY KEY",
+          "column_name": "id",
+          "foreign_table_name": "investment_products",
+          "foreign_column_name": "id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "investment_products_product_code_key",
+          "constraint_type": "UNIQUE",
+          "column_name": "product_code",
+          "foreign_table_name": "investment_products",
+          "foreign_column_name": "product_code",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        }
+      ]
+    },
+    "investment_transactions": {
+      "table_name": "investment_transactions",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": "gen_random_uuid()",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "user_id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_table": "users",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "account_id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_table": "accounts",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "product_id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_table": "investment_products",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "holding_id",
+          "data_type": "uuid",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_table": "investment_holdings",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "transaction_type",
+          "data_type": "USER-DEFINED",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "shares",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 8,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "unit_price",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "amount",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "fee",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": "0",
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "net_amount",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "status",
+          "data_type": "USER-DEFINED",
+          "is_nullable": false,
+          "column_default": "'pending'::investment_transaction_status_enum",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "settlement_date",
+          "data_type": "timestamp with time zone",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "description",
+          "data_type": "text",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "idx_investment_transactions_account",
+          "table_name": "investment_transactions",
+          "column_names": [
+            "account_id"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_transactions_date",
+          "table_name": "investment_transactions",
+          "column_names": [
+            "created_at"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_transactions_holding",
+          "table_name": "investment_transactions",
+          "column_names": [
+            "holding_id"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_transactions_product",
+          "table_name": "investment_transactions",
+          "column_names": [
+            "product_id"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_transactions_product_type",
+          "table_name": "investment_transactions",
+          "column_names": [
+            "product_id",
+            "transaction_type"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_transactions_settlement",
+          "table_name": "investment_transactions",
+          "column_names": [
+            "settlement_date"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_transactions_status",
+          "table_name": "investment_transactions",
+          "column_names": [
+            "status"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_transactions_status_date",
+          "table_name": "investment_transactions",
+          "column_names": [
+            "status",
+            "created_at"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_transactions_type",
+          "table_name": "investment_transactions",
+          "column_names": [
+            "transaction_type"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_transactions_user",
+          "table_name": "investment_transactions",
+          "column_names": [
+            "user_id"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_investment_transactions_user_type",
+          "table_name": "investment_transactions",
+          "column_names": [
+            "user_id",
+            "transaction_type"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "investment_transactions_pkey",
+          "table_name": "investment_transactions",
+          "column_names": [
+            "id"
+          ],
+          "is_unique": true,
+          "is_primary": true,
+          "index_type": "btree"
+        }
+      ],
+      "row_count": 13,
+      "table_size": "208 kB",
+      "constraints": [
+        {
+          "constraint_name": "2200_16545_10_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16545_11_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16545_12_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16545_15_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16545_16_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16545_1_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16545_2_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16545_3_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16545_4_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16545_6_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16545_7_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16545_8_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16545_9_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_amount_positive",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_transactions",
+          "foreign_column_name": "amount",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_fee_non_negative",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_transactions",
+          "foreign_column_name": "fee",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_net_amount_positive",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_transactions",
+          "foreign_column_name": "net_amount",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_shares_not_zero",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_transactions",
+          "foreign_column_name": "shares",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_unit_price_positive",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_transactions",
+          "foreign_column_name": "unit_price",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_valid_transaction_status",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_transactions",
+          "foreign_column_name": "status",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_valid_transaction_type",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "investment_transactions",
+          "foreign_column_name": "transaction_type",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "investment_transactions_account_id_fkey",
+          "constraint_type": "FOREIGN KEY",
+          "column_name": "account_id",
+          "foreign_table_name": "accounts",
+          "foreign_column_name": "id",
+          "match_option": "NONE",
+          "update_rule": "NO ACTION",
+          "delete_rule": "CASCADE"
+        },
+        {
+          "constraint_name": "investment_transactions_holding_id_fkey",
+          "constraint_type": "FOREIGN KEY",
+          "column_name": "holding_id",
+          "foreign_table_name": "investment_holdings",
+          "foreign_column_name": "id",
+          "match_option": "NONE",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        },
+        {
+          "constraint_name": "investment_transactions_product_id_fkey",
+          "constraint_type": "FOREIGN KEY",
+          "column_name": "product_id",
+          "foreign_table_name": "investment_products",
+          "foreign_column_name": "id",
+          "match_option": "NONE",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        },
+        {
+          "constraint_name": "investment_transactions_user_id_fkey",
+          "constraint_type": "FOREIGN KEY",
+          "column_name": "user_id",
+          "foreign_table_name": "users",
+          "foreign_column_name": "id",
+          "match_option": "NONE",
+          "update_rule": "NO ACTION",
+          "delete_rule": "CASCADE"
+        },
+        {
+          "constraint_name": "investment_transactions_pkey",
+          "constraint_type": "PRIMARY KEY",
+          "column_name": "id",
+          "foreign_table_name": "investment_transactions",
+          "foreign_column_name": "id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        }
+      ]
+    },
+    "product_nav_history": {
+      "table_name": "product_nav_history",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": "gen_random_uuid()",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "product_id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_table": "investment_products",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "nav_date",
+          "data_type": "date",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "unit_nav",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "accumulated_nav",
+          "data_type": "numeric",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "daily_return_rate",
+          "data_type": "numeric",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 8,
+          "numeric_scale": 6,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "idx_product_nav_history_date",
+          "table_name": "product_nav_history",
+          "column_names": [
+            "nav_date"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_product_nav_history_product",
+          "table_name": "product_nav_history",
+          "column_names": [
+            "product_id"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_product_nav_history_product_date",
+          "table_name": "product_nav_history",
+          "column_names": [
+            "product_id",
+            "nav_date"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_product_nav_history_updated_at",
+          "table_name": "product_nav_history",
+          "column_names": [
+            "updated_at"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "product_nav_history_pkey",
+          "table_name": "product_nav_history",
+          "column_names": [
+            "id"
+          ],
+          "is_unique": true,
+          "is_primary": true,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "uq_product_nav_date",
+          "table_name": "product_nav_history",
+          "column_names": [
+            "product_id",
+            "nav_date"
+          ],
+          "is_unique": true,
+          "is_primary": false,
+          "index_type": "btree"
+        }
+      ],
+      "row_count": 93,
+      "table_size": "168 kB",
+      "constraints": [
+        {
+          "constraint_name": "2200_16595_1_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16595_2_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16595_3_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16595_4_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16595_7_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16595_8_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_accumulated_nav_positive",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "product_nav_history",
+          "foreign_column_name": "accumulated_nav",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_unit_nav_positive",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "product_nav_history",
+          "foreign_column_name": "unit_nav",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "product_nav_history_product_id_fkey",
+          "constraint_type": "FOREIGN KEY",
+          "column_name": "product_id",
+          "foreign_table_name": "investment_products",
+          "foreign_column_name": "id",
+          "match_option": "NONE",
+          "update_rule": "NO ACTION",
+          "delete_rule": "CASCADE"
+        },
+        {
+          "constraint_name": "product_nav_history_pkey",
+          "constraint_type": "PRIMARY KEY",
+          "column_name": "id",
+          "foreign_table_name": "product_nav_history",
+          "foreign_column_name": "id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_product_nav_date",
+          "constraint_type": "UNIQUE",
+          "column_name": "nav_date",
+          "foreign_table_name": "product_nav_history",
+          "foreign_column_name": "nav_date",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_product_nav_date",
+          "constraint_type": "UNIQUE",
+          "column_name": "nav_date",
+          "foreign_table_name": "product_nav_history",
+          "foreign_column_name": "product_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_product_nav_date",
+          "constraint_type": "UNIQUE",
+          "column_name": "product_id",
+          "foreign_table_name": "product_nav_history",
+          "foreign_column_name": "nav_date",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_product_nav_date",
+          "constraint_type": "UNIQUE",
+          "column_name": "product_id",
+          "foreign_table_name": "product_nav_history",
+          "foreign_column_name": "product_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        }
+      ]
+    },
+    "transaction_entries": {
+      "table_name": "transaction_entries",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": "gen_random_uuid()",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "transaction_group_id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_table": "transaction_groups",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "account_id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_table": "accounts",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "entry_type",
+          "data_type": "USER-DEFINED",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "amount",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "balance_after",
+          "data_type": "numeric",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "description",
+          "data_type": "text",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "idx_transaction_entries_account",
+          "table_name": "transaction_entries",
+          "column_names": [
+            "account_id"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_transaction_entries_account_created",
+          "table_name": "transaction_entries",
+          "column_names": [
+            "account_id",
+            "created_at"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_transaction_entries_group",
+          "table_name": "transaction_entries",
+          "column_names": [
+            "transaction_group_id"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_transaction_entries_type",
+          "table_name": "transaction_entries",
+          "column_names": [
+            "entry_type"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "transaction_entries_pkey",
+          "table_name": "transaction_entries",
+          "column_names": [
+            "id"
+          ],
+          "is_unique": true,
+          "is_primary": true,
+          "index_type": "btree"
+        }
+      ],
+      "row_count": 50,
+      "table_size": "96 kB",
+      "constraints": [
+        {
+          "constraint_name": "2200_17196_1_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_17196_2_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_17196_3_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_17196_4_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_17196_5_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_17196_8_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_17196_9_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_transaction_entries_amount_positive",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "transaction_entries",
+          "foreign_column_name": "amount",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "fk_transaction_entries_account",
+          "constraint_type": "FOREIGN KEY",
+          "column_name": "account_id",
+          "foreign_table_name": "accounts",
+          "foreign_column_name": "id",
+          "match_option": "NONE",
+          "update_rule": "NO ACTION",
+          "delete_rule": "RESTRICT"
+        },
+        {
+          "constraint_name": "fk_transaction_entries_group",
+          "constraint_type": "FOREIGN KEY",
+          "column_name": "transaction_group_id",
+          "foreign_table_name": "transaction_groups",
+          "foreign_column_name": "id",
+          "match_option": "NONE",
+          "update_rule": "NO ACTION",
+          "delete_rule": "CASCADE"
+        },
+        {
+          "constraint_name": "transaction_entries_pkey",
+          "constraint_type": "PRIMARY KEY",
+          "column_name": "id",
+          "foreign_table_name": "transaction_entries",
+          "foreign_column_name": "id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        }
+      ]
+    },
+    "transaction_groups": {
+      "table_name": "transaction_groups",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": "gen_random_uuid()",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "group_type",
+          "data_type": "character varying",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "description",
+          "data_type": "text",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "total_amount",
+          "data_type": "numeric",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 19,
+          "numeric_scale": 4,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "status",
+          "data_type": "USER-DEFINED",
+          "is_nullable": false,
+          "column_default": "'pending'::transaction_status_enum",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "reference_id",
+          "data_type": "uuid",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "idx_transaction_groups_created_at",
+          "table_name": "transaction_groups",
+          "column_names": [
+            "created_at"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_transaction_groups_reference",
+          "table_name": "transaction_groups",
+          "column_names": [
+            "reference_id"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_transaction_groups_status",
+          "table_name": "transaction_groups",
+          "column_names": [
+            "status"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_transaction_groups_type",
+          "table_name": "transaction_groups",
+          "column_names": [
+            "group_type"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "transaction_groups_pkey",
+          "table_name": "transaction_groups",
+          "column_names": [
+            "id"
+          ],
+          "is_unique": true,
+          "is_primary": true,
+          "index_type": "btree"
+        }
+      ],
+      "row_count": 25,
+      "table_size": "96 kB",
+      "constraints": [
+        {
+          "constraint_name": "2200_17185_1_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_17185_2_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_17185_4_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_17185_5_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_17185_7_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_17185_8_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "transaction_groups_pkey",
+          "constraint_type": "PRIMARY KEY",
+          "column_name": "id",
+          "foreign_table_name": "transaction_groups",
+          "foreign_column_name": "id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        }
+      ]
+    },
+    "user_profiles": {
+      "table_name": "user_profiles",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": "gen_random_uuid()",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "user_id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_table": "users",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "real_name",
+          "data_type": "character varying",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "english_name",
+          "data_type": "character varying",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "id_type",
+          "data_type": "character varying",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "id_number",
+          "data_type": "character varying",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "country",
+          "data_type": "character varying",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "ethnicity",
+          "data_type": "character varying",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "gender",
+          "data_type": "character varying",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": 10,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "birth_date",
+          "data_type": "date",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "birth_place",
+          "data_type": "character varying",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": 200,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "phone",
+          "data_type": "character varying",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": 20,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "email",
+          "data_type": "character varying",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "address",
+          "data_type": "character varying",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": 500,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "idx_user_profiles_email",
+          "table_name": "user_profiles",
+          "column_names": [
+            "email"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_user_profiles_id_number",
+          "table_name": "user_profiles",
+          "column_names": [
+            "id_number"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_user_profiles_phone",
+          "table_name": "user_profiles",
+          "column_names": [
+            "phone"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_user_profiles_real_name",
+          "table_name": "user_profiles",
+          "column_names": [
+            "real_name"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "user_profiles_pkey",
+          "table_name": "user_profiles",
+          "column_names": [
+            "id"
+          ],
+          "is_unique": true,
+          "is_primary": true,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "user_profiles_user_id_key",
+          "table_name": "user_profiles",
+          "column_names": [
+            "user_id"
+          ],
+          "is_unique": true,
+          "is_primary": false,
+          "index_type": "btree"
+        }
+      ],
+      "row_count": 2,
+      "table_size": "112 kB",
+      "constraints": [
+        {
+          "constraint_name": "2200_16618_15_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16618_16_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16618_1_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16618_2_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "user_profiles_user_id_fkey",
+          "constraint_type": "FOREIGN KEY",
+          "column_name": "user_id",
+          "foreign_table_name": "users",
+          "foreign_column_name": "id",
+          "match_option": "NONE",
+          "update_rule": "NO ACTION",
+          "delete_rule": "CASCADE"
+        },
+        {
+          "constraint_name": "user_profiles_pkey",
+          "constraint_type": "PRIMARY KEY",
+          "column_name": "id",
+          "foreign_table_name": "user_profiles",
+          "foreign_column_name": "id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "user_profiles_user_id_key",
+          "constraint_type": "UNIQUE",
+          "column_name": "user_id",
+          "foreign_table_name": "user_profiles",
+          "foreign_column_name": "user_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        }
+      ]
+    },
+    "user_risk_assessments": {
+      "table_name": "user_risk_assessments",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": "gen_random_uuid()",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "user_id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_table": "users",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "risk_tolerance",
+          "data_type": "integer",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "investment_experience",
+          "data_type": "USER-DEFINED",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "investment_goal",
+          "data_type": "USER-DEFINED",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "investment_horizon",
+          "data_type": "USER-DEFINED",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "monthly_income_range",
+          "data_type": "character varying",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "assessment_score",
+          "data_type": "integer",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "assessment_data",
+          "data_type": "jsonb",
+          "is_nullable": true,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "expires_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "idx_user_risk_assessments_expires",
+          "table_name": "user_risk_assessments",
+          "column_names": [
+            "expires_at"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_user_risk_assessments_user",
+          "table_name": "user_risk_assessments",
+          "column_names": [
+            "user_id"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_user_risk_assessments_user_expires",
+          "table_name": "user_risk_assessments",
+          "column_names": [
+            "user_id",
+            "expires_at"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "uq_user_assessment_date",
+          "table_name": "user_risk_assessments",
+          "column_names": [
+            "user_id",
+            "created_at"
+          ],
+          "is_unique": true,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "user_risk_assessments_pkey",
+          "table_name": "user_risk_assessments",
+          "column_names": [
+            "id"
+          ],
+          "is_unique": true,
+          "is_primary": true,
+          "index_type": "btree"
+        }
+      ],
+      "row_count": 3,
+      "table_size": "96 kB",
+      "constraints": [
+        {
+          "constraint_name": "2200_16478_10_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16478_11_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16478_1_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16478_2_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16478_3_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16478_4_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16478_5_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16478_6_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16478_8_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_assessment_score",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "user_risk_assessments",
+          "foreign_column_name": "assessment_score",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_risk_tolerance",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "user_risk_assessments",
+          "foreign_column_name": "risk_tolerance",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_valid_investment_experience",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "user_risk_assessments",
+          "foreign_column_name": "investment_experience",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_valid_investment_goal",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "user_risk_assessments",
+          "foreign_column_name": "investment_goal",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "ck_valid_investment_horizon",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": "user_risk_assessments",
+          "foreign_column_name": "investment_horizon",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "user_risk_assessments_user_id_fkey",
+          "constraint_type": "FOREIGN KEY",
+          "column_name": "user_id",
+          "foreign_table_name": "users",
+          "foreign_column_name": "id",
+          "match_option": "NONE",
+          "update_rule": "NO ACTION",
+          "delete_rule": "CASCADE"
+        },
+        {
+          "constraint_name": "user_risk_assessments_pkey",
+          "constraint_type": "PRIMARY KEY",
+          "column_name": "id",
+          "foreign_table_name": "user_risk_assessments",
+          "foreign_column_name": "id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_assessment_date",
+          "constraint_type": "UNIQUE",
+          "column_name": "created_at",
+          "foreign_table_name": "user_risk_assessments",
+          "foreign_column_name": "user_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_assessment_date",
+          "constraint_type": "UNIQUE",
+          "column_name": "user_id",
+          "foreign_table_name": "user_risk_assessments",
+          "foreign_column_name": "created_at",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_assessment_date",
+          "constraint_type": "UNIQUE",
+          "column_name": "user_id",
+          "foreign_table_name": "user_risk_assessments",
+          "foreign_column_name": "user_id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "uq_user_assessment_date",
+          "constraint_type": "UNIQUE",
+          "column_name": "created_at",
+          "foreign_table_name": "user_risk_assessments",
+          "foreign_column_name": "created_at",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        }
+      ]
+    },
+    "users": {
+      "table_name": "users",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": false,
+          "column_default": "gen_random_uuid()",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "username",
+          "data_type": "character varying",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": 255,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "hashed_password",
+          "data_type": "character varying",
+          "is_nullable": false,
+          "column_default": null,
+          "character_maximum_length": 255,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": false,
+          "column_default": "CURRENT_TIMESTAMP",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        },
+        {
+          "column_name": "role",
+          "data_type": "USER-DEFINED",
+          "is_nullable": false,
+          "column_default": "'user'::user_role",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_table": null,
+          "foreign_column": null
+        }
+      ],
+      "indexes": [
+        {
+          "index_name": "idx_users_role",
+          "table_name": "users",
+          "column_names": [
+            "role"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "idx_users_updated_at",
+          "table_name": "users",
+          "column_names": [
+            "updated_at"
+          ],
+          "is_unique": false,
+          "is_primary": false,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "users_pkey",
+          "table_name": "users",
+          "column_names": [
+            "id"
+          ],
+          "is_unique": true,
+          "is_primary": true,
+          "index_type": "btree"
+        },
+        {
+          "index_name": "users_username_key",
+          "table_name": "users",
+          "column_names": [
+            "username"
+          ],
+          "is_unique": true,
+          "is_primary": false,
+          "index_type": "btree"
+        }
+      ],
+      "row_count": 9,
+      "table_size": "80 kB",
+      "constraints": [
+        {
+          "constraint_name": "2200_16389_1_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16389_2_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16389_3_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16389_4_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16389_5_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "2200_16389_6_not_null",
+          "constraint_type": "CHECK",
+          "column_name": null,
+          "foreign_table_name": null,
+          "foreign_column_name": null,
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "users_pkey",
+          "constraint_type": "PRIMARY KEY",
+          "column_name": "id",
+          "foreign_table_name": "users",
+          "foreign_column_name": "id",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        },
+        {
+          "constraint_name": "users_username_key",
+          "constraint_type": "UNIQUE",
+          "column_name": "username",
+          "foreign_table_name": "users",
+          "foreign_column_name": "username",
+          "match_option": null,
+          "update_rule": null,
+          "delete_rule": null
+        }
+      ]
+    }
+  },
+  "analysis": {
+    "summary": {
+      "total_tables": 11,
+      "total_columns": 111,
+      "total_indexes": 66,
+      "total_rows": 219
+    },
+    "issues": [
+      "表 alembic_version 缺少时间戳字段"
+    ],
+    "recommendations": [
+      "表 ['alembic_version'] 没有外键关系，请确认是否需要建立关联"
+    ],
+    "strengths": [
+      "表 accounts 使用UUID主键，有利于分布式系统",
+      "表 accounts 包含创建和更新时间戳",
+      "表 investment_holdings 使用UUID主键，有利于分布式系统",
+      "表 investment_holdings 包含创建和更新时间戳",
+      "表 investment_products 使用UUID主键，有利于分布式系统",
+      "表 investment_products 包含创建和更新时间戳",
+      "表 investment_transactions 使用UUID主键，有利于分布式系统",
+      "表 investment_transactions 包含创建和更新时间戳",
+      "表 product_nav_history 使用UUID主键，有利于分布式系统",
+      "表 product_nav_history 包含创建和更新时间戳",
+      "表 transaction_entries 使用UUID主键，有利于分布式系统",
+      "表 transaction_entries 包含创建和更新时间戳",
+      "表 transaction_groups 使用UUID主键，有利于分布式系统",
+      "表 transaction_groups 包含创建和更新时间戳",
+      "表 user_profiles 使用UUID主键，有利于分布式系统",
+      "表 user_profiles 包含创建和更新时间戳",
+      "表 user_risk_assessments 使用UUID主键，有利于分布式系统",
+      "表 user_risk_assessments 包含创建和更新时间戳",
+      "表 users 使用UUID主键，有利于分布式系统",
+      "表 users 包含创建和更新时间戳",
+      "表 users 被 5 个表引用，关系设计良好",
+      "表 accounts 被 3 个表引用，关系设计良好",
+      "表 investment_products 被 3 个表引用，关系设计良好",
+      "表 investment_holdings 被 1 个表引用，关系设计良好",
+      "表 transaction_groups 被 1 个表引用，关系设计良好"
+    ]
+  }
+}

@@ -20,6 +20,8 @@ class TransactionType(str, Enum):
     DEPOSIT = "deposit"
     WITHDRAWAL = "withdrawal"
     TRANSFER = "transfer"
+    TRANSFER_OUT = "transfer_out"
+    TRANSFER_IN = "transfer_in"
     INVESTMENT_PURCHASE = "理财申购"
     INVESTMENT_REDEMPTION = "理财赎回"
 

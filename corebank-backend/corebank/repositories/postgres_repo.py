@@ -106,9 +106,10 @@ class PostgresRepository:
             Optional[dict]: User data if found, None otherwise
         """
         query = """
-            SELECT id, username, created_at
+            SELECT id, username, role, created_at, updated_at,
+                   is_active, deleted_at, last_login_at
             FROM users
-            WHERE id = %s
+            WHERE id = %s AND deleted_at IS NULL
         """
 
         async with self.db_manager.get_connection() as conn:
@@ -155,22 +156,22 @@ class PostgresRepository:
                     'profile': None
                 }
 
-                # Add profile if exists
-                if result['real_name'] is not None or result['phone'] is not None:
-                    user_data['profile'] = {
-                        'real_name': result['real_name'],
-                        'english_name': result['english_name'],
-                        'id_type': result['id_type'],
-                        'id_number': result['id_number'],
-                        'country': result['country'],
-                        'ethnicity': result['ethnicity'],
-                        'gender': result['gender'],
-                        'birth_date': result['birth_date'],
-                        'birth_place': result['birth_place'],
-                        'phone': result['phone'],
-                        'email': result['email'],
-                        'address': result['address']
-                    }
+                # Add profile fields directly to user_data (flattened structure)
+                # This matches the UserDetailResponse model structure
+                user_data.update({
+                    'real_name': result['real_name'],
+                    'english_name': result['english_name'],
+                    'id_type': result['id_type'],
+                    'id_number': result['id_number'],
+                    'country': result['country'],
+                    'ethnicity': result['ethnicity'],
+                    'gender': result['gender'],
+                    'birth_date': result['birth_date'],
+                    'birth_place': result['birth_place'],
+                    'phone': result['phone'],
+                    'email': result['email'],
+                    'address': result['address']
+                })
 
                 return user_data
 
@@ -405,6 +406,31 @@ class PostgresRepository:
         async with self.db_manager.get_connection() as conn:
             async with conn.cursor(row_factory=dict_row) as cur:
                 await cur.execute(query, (user_id,))
+                return await cur.fetchall()
+
+    async def get_all_accounts(self) -> list[dict]:
+        """
+        Get all accounts in the system (admin only).
+
+        Returns:
+            list[dict]: List of all accounts with user information
+        """
+        query = """
+            SELECT
+                a.id, a.account_number, a.user_id, a.account_type,
+                a.balance, a.created_at, a.updated_at,
+                u.username,
+                up.real_name
+            FROM accounts a
+            JOIN users u ON a.user_id = u.id
+            LEFT JOIN user_profiles up ON u.id = up.user_id
+            WHERE u.deleted_at IS NULL
+            ORDER BY a.created_at DESC
+        """
+
+        async with self.db_manager.get_connection() as conn:
+            async with conn.cursor(row_factory=dict_row) as cur:
+                await cur.execute(query)
                 return await cur.fetchall()
 
     async def update_account_balance(
@@ -1954,32 +1980,25 @@ class PostgresRepository:
             raise
 
     # User management methods
-    async def get_user_by_id(self, user_id: UUID) -> Optional[dict]:
-        """Get user by ID."""
-        query = """
-            SELECT id, username, role, created_at
-            FROM users
-            WHERE id = %s
-        """
-
-        async with self.db_manager.get_connection() as conn:
-            async with conn.cursor(row_factory=dict_row) as cur:
-                await cur.execute(query, (user_id,))
-                return await cur.fetchone()
 
     async def get_user_detail_by_id(self, user_id: UUID) -> Optional[dict]:
         """Get detailed user information by ID including profile."""
         query = """
             SELECT
-                u.id, u.username, u.role, u.created_at,
+                u.id, u.username, u.role, u.created_at, u.updated_at,
+                u.is_active, u.deleted_at, u.last_login_at,
                 up.real_name, up.english_name, up.id_type, up.id_number,
                 up.country, up.ethnicity, up.gender, up.birth_date,
                 up.birth_place, up.phone, up.email, up.address,
                 up.created_at as profile_created_at,
-                up.updated_at as profile_updated_at
+                up.updated_at as profile_updated_at,
+                -- Account statistics
+                (SELECT COUNT(*) FROM accounts WHERE user_id = u.id) as account_count,
+                (SELECT COALESCE(SUM(balance), 0)::text FROM accounts WHERE user_id = u.id) as total_balance,
+                (SELECT COUNT(*) FROM investment_holdings WHERE user_id = u.id AND status = 'active') as investment_count
             FROM users u
             LEFT JOIN user_profiles up ON u.id = up.user_id
-            WHERE u.id = %s
+            WHERE u.id = %s AND u.deleted_at IS NULL
         """
 
         async with self.db_manager.get_connection() as conn:
@@ -1991,41 +2010,89 @@ class PostgresRepository:
         self,
         limit: int = 50,
         offset: int = 0,
-        role_filter: Optional[str] = None
+        role_filter: Optional[str] = None,
+        include_deleted: bool = False,
+        search_term: Optional[str] = None
     ) -> list[dict]:
-        """Get all users with optional role filtering."""
-        base_query = """
+        """Get all users with optional role filtering, deleted users, and search."""
+        # Build WHERE clause based on include_deleted parameter
+        where_conditions = []
+        if include_deleted:
+            where_conditions.append("1=1")  # Include all users
+        else:
+            where_conditions.append("u.deleted_at IS NULL")  # Only active users
+
+        params = []
+
+        # Add role filter
+        if role_filter:
+            where_conditions.append("u.role = %s")
+            params.append(role_filter)
+
+        # Add search filter
+        if search_term:
+            where_conditions.append("(u.username ILIKE %s OR up.real_name ILIKE %s OR up.email ILIKE %s)")
+            search_pattern = f"%{search_term}%"
+            params.extend([search_pattern, search_pattern, search_pattern])
+
+        where_clause = "WHERE " + " AND ".join(where_conditions)
+
+        query = f"""
             SELECT
-                u.id, u.username, u.role, u.created_at,
+                u.id, u.username, u.role, u.created_at, u.updated_at,
+                u.is_active, u.deleted_at, u.last_login_at,
                 up.real_name, up.english_name, up.id_type, up.id_number,
                 up.country, up.ethnicity, up.gender, up.birth_date,
                 up.birth_place, up.phone, up.email, up.address,
                 up.created_at as profile_created_at,
-                up.updated_at as profile_updated_at
+                up.updated_at as profile_updated_at,
+                -- Account statistics
+                (SELECT COUNT(*) FROM accounts WHERE user_id = u.id) as account_count,
+                (SELECT COALESCE(SUM(balance), 0)::text FROM accounts WHERE user_id = u.id) as total_balance,
+                (SELECT COUNT(*) FROM investment_holdings WHERE user_id = u.id AND status = 'active') as investment_count
             FROM users u
             LEFT JOIN user_profiles up ON u.id = up.user_id
+            {where_clause}
+            ORDER BY u.created_at DESC LIMIT %s OFFSET %s
         """
 
-        if role_filter:
-            query = base_query + " WHERE u.role = %s ORDER BY u.created_at DESC LIMIT %s OFFSET %s"
-            params = (role_filter, limit, offset)
-        else:
-            query = base_query + " ORDER BY u.created_at DESC LIMIT %s OFFSET %s"
-            params = (limit, offset)
+        params.extend([limit, offset])
 
         async with self.db_manager.get_connection() as conn:
             async with conn.cursor(row_factory=dict_row) as cur:
                 await cur.execute(query, params)
                 return await cur.fetchall()
 
-    async def count_users(self, role_filter: Optional[str] = None) -> int:
-        """Count total users with optional role filtering."""
-        if role_filter:
-            query = "SELECT COUNT(*) as count FROM users WHERE role = %s"
-            params = (role_filter,)
+    async def count_users(self, role_filter: Optional[str] = None, include_deleted: bool = False, search_term: Optional[str] = None) -> int:
+        """Count total users with optional role filtering, deleted users, and search."""
+        # Build WHERE clause based on include_deleted parameter
+        where_conditions = []
+        if include_deleted:
+            where_conditions.append("1=1")  # Include all users
         else:
-            query = "SELECT COUNT(*) as count FROM users"
-            params = ()
+            where_conditions.append("u.deleted_at IS NULL")  # Only active users
+
+        params = []
+
+        # Add role filter
+        if role_filter:
+            where_conditions.append("u.role = %s")
+            params.append(role_filter)
+
+        # Add search filter
+        if search_term:
+            where_conditions.append("(u.username ILIKE %s OR up.real_name ILIKE %s OR up.email ILIKE %s)")
+            search_pattern = f"%{search_term}%"
+            params.extend([search_pattern, search_pattern, search_pattern])
+
+        where_clause = "WHERE " + " AND ".join(where_conditions)
+
+        query = f"""
+            SELECT COUNT(*) as count
+            FROM users u
+            LEFT JOIN user_profiles up ON u.id = up.user_id
+            {where_clause}
+        """
 
         async with self.db_manager.get_connection() as conn:
             async with conn.cursor(row_factory=dict_row) as cur:
@@ -2038,8 +2105,8 @@ class PostgresRepository:
         query = """
             UPDATE users
             SET role = %s
-            WHERE id = %s
-            RETURNING id, username, role, created_at
+            WHERE id = %s AND deleted_at IS NULL
+            RETURNING id, username, role, created_at, updated_at, is_active, deleted_at, last_login_at
         """
 
         async with self.db_manager.get_connection() as conn:
@@ -2050,6 +2117,351 @@ class PostgresRepository:
                     raise ValueError("User not found")
                 await conn.commit()
                 return result
+
+
+
+    async def soft_delete_user(self, user_id: UUID, reason: str) -> dict:
+        """Soft delete a user."""
+        from datetime import datetime, timezone
+
+        now = datetime.now(timezone.utc)
+        query = """
+            UPDATE users
+            SET deleted_at = %s, is_active = false
+            WHERE id = %s AND deleted_at IS NULL
+            RETURNING id, username, role, created_at, updated_at, is_active, deleted_at, last_login_at
+        """
+
+        async with self.db_manager.get_connection() as conn:
+            async with conn.cursor(row_factory=dict_row) as cur:
+                await cur.execute(query, (now, user_id))
+                result = await cur.fetchone()
+                if not result:
+                    raise ValueError("User not found")
+
+                # Log the deletion reason (you might want to create a separate audit table)
+                logger.info(f"User {user_id} soft deleted. Reason: {reason}")
+
+                await conn.commit()
+                return result
+
+    async def update_last_login(self, user_id: UUID) -> None:
+        """Update user's last login timestamp."""
+        from datetime import datetime, timezone
+
+        now = datetime.now(timezone.utc)
+        query = """
+            UPDATE users
+            SET last_login_at = %s
+            WHERE id = %s AND deleted_at IS NULL
+        """
+
+        async with self.db_manager.get_connection() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute(query, (now, user_id))
+                await conn.commit()
+
+    async def restore_user(self, user_id: UUID, reason: str) -> dict:
+        """Restore a soft deleted user."""
+        query = """
+            UPDATE users
+            SET deleted_at = NULL, is_active = true
+            WHERE id = %s AND deleted_at IS NOT NULL
+            RETURNING id, username, role, created_at, updated_at, is_active, deleted_at, last_login_at
+        """
+
+        async with self.db_manager.get_connection() as conn:
+            async with conn.cursor(row_factory=dict_row) as cur:
+                await cur.execute(query, (user_id,))
+                result = await cur.fetchone()
+                if not result:
+                    raise ValueError("User not found or not deleted")
+
+                # Log the restoration reason
+                logger.info(f"User {user_id} restored. Reason: {reason}")
+
+                await conn.commit()
+                return result
+
+    async def get_deleted_users(
+        self,
+        limit: int = 50,
+        offset: int = 0,
+        role_filter: Optional[str] = None
+    ) -> list[dict]:
+        """Get only deleted users."""
+        base_query = """
+            SELECT
+                u.id, u.username, u.role, u.created_at, u.updated_at,
+                u.is_active, u.deleted_at, u.last_login_at,
+                up.real_name, up.english_name, up.id_type, up.id_number,
+                up.country, up.ethnicity, up.gender, up.birth_date,
+                up.birth_place, up.phone, up.email, up.address,
+                up.created_at as profile_created_at,
+                up.updated_at as profile_updated_at,
+                -- Account statistics
+                (SELECT COUNT(*) FROM accounts WHERE user_id = u.id) as account_count,
+                (SELECT COALESCE(SUM(balance), 0)::text FROM accounts WHERE user_id = u.id) as total_balance,
+                (SELECT COUNT(*) FROM investment_holdings WHERE user_id = u.id AND status = 'active') as investment_count
+            FROM users u
+            LEFT JOIN user_profiles up ON u.id = up.user_id
+            WHERE u.deleted_at IS NOT NULL
+        """
+
+        if role_filter:
+            query = base_query + " AND u.role = %s ORDER BY u.deleted_at DESC LIMIT %s OFFSET %s"
+            params = (role_filter, limit, offset)
+        else:
+            query = base_query + " ORDER BY u.deleted_at DESC LIMIT %s OFFSET %s"
+            params = (limit, offset)
+
+        async with self.db_manager.get_connection() as conn:
+            async with conn.cursor(row_factory=dict_row) as cur:
+                await cur.execute(query, params)
+                return await cur.fetchall()
+
+    async def count_deleted_users(self, role_filter: Optional[str] = None) -> int:
+        """Count deleted users with optional role filtering."""
+        if role_filter:
+            query = "SELECT COUNT(*) as count FROM users WHERE deleted_at IS NOT NULL AND role = %s"
+            params = (role_filter,)
+        else:
+            query = "SELECT COUNT(*) as count FROM users WHERE deleted_at IS NOT NULL"
+            params = ()
+
+        async with self.db_manager.get_connection() as conn:
+            async with conn.cursor(row_factory=dict_row) as cur:
+                await cur.execute(query, params)
+                result = await cur.fetchone()
+                return result['count'] if result else 0
+
+    async def get_user_statistics(self) -> dict:
+        """Get user statistics for admin dashboard."""
+        query = """
+            SELECT
+                COUNT(*) as total_users,
+                COUNT(*) FILTER (WHERE role = 'admin') as admin_users,
+                COUNT(*) FILTER (WHERE role = 'user') as regular_users,
+                COUNT(*) FILTER (WHERE is_active = true) as active_users,
+                COUNT(*) FILTER (WHERE is_active = false) as inactive_users,
+                COUNT(*) FILTER (WHERE deleted_at IS NOT NULL) as deleted_users,
+                COUNT(*) FILTER (WHERE created_at >= CURRENT_DATE - INTERVAL '30 days') as new_users_30d,
+                COUNT(*) FILTER (WHERE last_login_at >= CURRENT_DATE - INTERVAL '7 days') as active_users_7d
+            FROM users
+        """
+
+        async with self.db_manager.get_connection() as conn:
+            async with conn.cursor(row_factory=dict_row) as cur:
+                await cur.execute(query)
+                result = await cur.fetchone()
+
+                if not result:
+                    return {}
+
+                return {
+                    'total_users': result['total_users'],
+                    'admin_users': result['admin_users'],
+                    'regular_users': result['regular_users'],
+                    'active_users': result['active_users'],
+                    'inactive_users': result['inactive_users'],
+                    'deleted_users': result['deleted_users'],
+                    'new_users_30d': result['new_users_30d'],
+                    'active_users_7d': result['active_users_7d']
+                }
+
+    # Admin transaction monitoring methods
+
+    async def get_all_transactions_for_admin(
+        self,
+        limit: int = 50,
+        offset: int = 0,
+        account_id: Optional[str] = None,
+        transaction_type: Optional[str] = None,
+        user_search: Optional[str] = None
+    ) -> list[dict]:
+        """Get all transactions for admin monitoring with filters."""
+
+        # Build WHERE clause based on filters
+        where_conditions = ["u.deleted_at IS NULL"]  # Only show transactions from active users
+        params = []
+
+        if account_id:
+            where_conditions.append("te.account_id = %s")
+            params.append(account_id)
+
+        if transaction_type:
+            if transaction_type == 'transfer_out':
+                where_conditions.append("tg.group_type = 'transfer' AND te.entry_type = 'debit'")
+            elif transaction_type == 'transfer_in':
+                where_conditions.append("tg.group_type = 'transfer' AND te.entry_type = 'credit'")
+            else:
+                where_conditions.append("tg.group_type = %s")
+                params.append(transaction_type)
+
+        if user_search:
+            where_conditions.append("""
+                (u.username ILIKE %s OR up.real_name ILIKE %s)
+            """)
+            search_pattern = f"%{user_search}%"
+            params.extend([search_pattern, search_pattern])
+
+        where_clause = " AND ".join(where_conditions)
+
+        query = f"""
+            SELECT DISTINCT
+                te.id,
+                te.account_id,
+                te.entry_type,
+                te.amount,
+                te.balance_after,
+                te.created_at as timestamp,
+                tg.id as transaction_group_id,
+                CASE
+                    WHEN tg.group_type = 'transfer' AND te.entry_type = 'debit' THEN 'transfer_out'
+                    WHEN tg.group_type = 'transfer' AND te.entry_type = 'credit' THEN 'transfer_in'
+                    ELSE tg.group_type
+                END as transaction_type,
+                tg.description,
+                tg.status,
+                -- Account information
+                a.account_number,
+                a.account_type,
+                -- User information
+                u.id as user_id,
+                u.username,
+                up.real_name,
+                up.phone,
+                -- Related account information (for transfers)
+                CASE
+                    WHEN tg.group_type = 'transfer' THEN
+                        (SELECT a2.account_number
+                         FROM transaction_entries te2
+                         JOIN accounts a2 ON te2.account_id = a2.id
+                         WHERE te2.transaction_group_id = tg.id
+                         AND te2.account_id != te.account_id
+                         LIMIT 1)
+                    ELSE NULL
+                END as related_account_number,
+                CASE
+                    WHEN tg.group_type = 'transfer' THEN
+                        (SELECT up2.real_name
+                         FROM transaction_entries te2
+                         JOIN accounts a2 ON te2.account_id = a2.id
+                         JOIN users u2 ON a2.user_id = u2.id
+                         LEFT JOIN user_profiles up2 ON u2.id = up2.user_id
+                         WHERE te2.transaction_group_id = tg.id
+                         AND te2.account_id != te.account_id
+                         LIMIT 1)
+                    ELSE NULL
+                END as related_user_name
+            FROM transaction_entries te
+            JOIN transaction_groups tg ON te.transaction_group_id = tg.id
+            JOIN accounts a ON te.account_id = a.id
+            JOIN users u ON a.user_id = u.id
+            LEFT JOIN user_profiles up ON u.id = up.user_id
+            WHERE {where_clause}
+            ORDER BY te.created_at DESC
+            LIMIT %s OFFSET %s
+        """
+
+        params.extend([limit, offset])
+
+        async with self.db_manager.get_connection() as conn:
+            async with conn.cursor(row_factory=dict_row) as cur:
+                await cur.execute(query, params)
+                return await cur.fetchall()
+
+    async def count_all_transactions_for_admin(
+        self,
+        account_id: Optional[str] = None,
+        transaction_type: Optional[str] = None,
+        user_search: Optional[str] = None
+    ) -> int:
+        """Count all transactions for admin monitoring with filters."""
+
+        # Build WHERE clause based on filters
+        where_conditions = ["u.deleted_at IS NULL"]
+        params = []
+
+        if account_id:
+            where_conditions.append("te.account_id = %s")
+            params.append(account_id)
+
+        if transaction_type:
+            if transaction_type == 'transfer_out':
+                where_conditions.append("tg.group_type = 'transfer' AND te.entry_type = 'debit'")
+            elif transaction_type == 'transfer_in':
+                where_conditions.append("tg.group_type = 'transfer' AND te.entry_type = 'credit'")
+            else:
+                where_conditions.append("tg.group_type = %s")
+                params.append(transaction_type)
+
+        if user_search:
+            where_conditions.append("""
+                (u.username ILIKE %s OR up.real_name ILIKE %s)
+            """)
+            search_pattern = f"%{user_search}%"
+            params.extend([search_pattern, search_pattern])
+
+        where_clause = " AND ".join(where_conditions)
+
+        query = f"""
+            SELECT COUNT(DISTINCT te.id) as count
+            FROM transaction_entries te
+            JOIN transaction_groups tg ON te.transaction_group_id = tg.id
+            JOIN accounts a ON te.account_id = a.id
+            JOIN users u ON a.user_id = u.id
+            LEFT JOIN user_profiles up ON u.id = up.user_id
+            WHERE {where_clause}
+        """
+
+        async with self.db_manager.get_connection() as conn:
+            async with conn.cursor(row_factory=dict_row) as cur:
+                await cur.execute(query, params)
+                result = await cur.fetchone()
+                return result['count'] if result else 0
+
+    async def get_transaction_statistics(self) -> dict:
+        """Get transaction statistics for admin dashboard."""
+        query = """
+            SELECT
+                COUNT(*) as total_transactions,
+                COUNT(*) FILTER (WHERE tg.group_type = 'deposit') as deposit_count,
+                COUNT(*) FILTER (WHERE tg.group_type = 'withdrawal') as withdrawal_count,
+                COUNT(*) FILTER (WHERE tg.group_type = 'transfer' AND te.entry_type = 'debit') as transfer_count,
+                COALESCE(SUM(te.amount) FILTER (WHERE tg.group_type = 'deposit'), 0) as total_deposits,
+                COALESCE(SUM(te.amount) FILTER (WHERE tg.group_type = 'withdrawal'), 0) as total_withdrawals,
+                COALESCE(SUM(te.amount) FILTER (WHERE tg.group_type = 'transfer'), 0) as total_transfers,
+                COUNT(*) FILTER (WHERE te.created_at >= CURRENT_DATE - INTERVAL '24 hours') as transactions_24h,
+                COUNT(*) FILTER (WHERE te.created_at >= CURRENT_DATE - INTERVAL '7 days') as transactions_7d,
+                COUNT(*) FILTER (WHERE te.created_at >= CURRENT_DATE - INTERVAL '30 days') as transactions_30d
+            FROM transaction_entries te
+            JOIN transaction_groups tg ON te.transaction_group_id = tg.id
+            JOIN accounts a ON te.account_id = a.id
+            JOIN users u ON a.user_id = u.id
+            WHERE u.deleted_at IS NULL
+        """
+
+        async with self.db_manager.get_connection() as conn:
+            async with conn.cursor(row_factory=dict_row) as cur:
+                await cur.execute(query)
+                result = await cur.fetchone()
+
+                if not result:
+                    return {}
+
+                return {
+                    'total_transactions': result['total_transactions'],
+                    'deposit_count': result['deposit_count'],
+                    'withdrawal_count': result['withdrawal_count'],
+                    'transfer_count': result['transfer_count'],
+                    'total_deposits': str(result['total_deposits']),
+                    'total_withdrawals': str(result['total_withdrawals']),
+                    'total_transfers': str(result['total_transfers']),
+                    'transactions_24h': result['transactions_24h'],
+                    'transactions_7d': result['transactions_7d'],
+                    'transactions_30d': result['transactions_30d']
+                }
 
     async def get_user_statistics(self) -> dict:
         """Get user statistics for admin dashboard."""

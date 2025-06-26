@@ -6,8 +6,7 @@ import {
   FunnelIcon,
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
-import { useEnhancedAccountTransactions } from '../../hooks/useEnhancedTransactions'
-import { useAccounts } from '../../hooks/useAccounts'
+import { useAdminTransactions, useAdminAccounts, useAdminTransactionStatistics } from '../../hooks/useAdminTransactions'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import TransactionCard from '../../components/transactions/TransactionCard'
 
@@ -17,34 +16,24 @@ export default function TransactionMonitoring() {
   const [searchTerm, setSearchTerm] = useState('')
   const [transactionType, setTransactionType] = useState('')
 
-  const { data: accounts, isLoading: accountsLoading } = useAccounts()
-  const { 
-    data: transactionsData, 
+  const { data: accounts, isLoading: accountsLoading } = useAdminAccounts()
+  const { data: statistics, isLoading: statisticsLoading } = useAdminTransactionStatistics()
+  const {
+    data: transactionsData,
     isLoading: transactionsLoading,
-    error: transactionsError 
-  } = useEnhancedAccountTransactions(
-    selectedAccountId, 
-    currentPage, 
+    error: transactionsError
+  } = useAdminTransactions(
+    currentPage,
     20,
-    { enabled: !!selectedAccountId }
+    {
+      account_id: selectedAccountId || undefined,
+      transaction_type: transactionType || undefined,
+      user_search: searchTerm || undefined
+    }
   )
 
-  // Auto-select first account if available
-  useEffect(() => {
-    if (accounts && accounts.length > 0 && !selectedAccountId) {
-      setSelectedAccountId(accounts[0].id)
-    }
-  }, [accounts, selectedAccountId])
-
-  const filteredTransactions = transactionsData?.items?.filter(transaction => {
-    const matchesSearch = searchTerm === '' || 
-      transaction.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaction.related_user_name?.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    const matchesType = transactionType === '' || transaction.transaction_type === transactionType
-    
-    return matchesSearch && matchesType
-  }) || []
+  // Transactions are already filtered on the backend
+  const transactions = transactionsData?.items || []
 
   if (accountsLoading) {
     return (
@@ -80,7 +69,7 @@ export default function TransactionMonitoring() {
                     总交易数
                   </dt>
                   <dd className="text-lg font-medium text-gray-900">
-                    {transactionsData?.total_count || 0}
+                    {statisticsLoading ? '...' : (statistics?.total_transactions || 0)}
                   </dd>
                 </dl>
               </div>
@@ -100,7 +89,7 @@ export default function TransactionMonitoring() {
                     存款交易
                   </dt>
                   <dd className="text-lg font-medium text-gray-900">
-                    {filteredTransactions.filter(t => t.transaction_type === 'deposit').length}
+                    {statisticsLoading ? '...' : (statistics?.deposit_count || 0)}
                   </dd>
                 </dl>
               </div>
@@ -120,7 +109,7 @@ export default function TransactionMonitoring() {
                     取款交易
                   </dt>
                   <dd className="text-lg font-medium text-gray-900">
-                    {filteredTransactions.filter(t => t.transaction_type === 'withdrawal').length}
+                    {statisticsLoading ? '...' : (statistics?.withdrawal_count || 0)}
                   </dd>
                 </dl>
               </div>
@@ -140,7 +129,7 @@ export default function TransactionMonitoring() {
                     转账交易
                   </dt>
                   <dd className="text-lg font-medium text-gray-900">
-                    {filteredTransactions.filter(t => t.transaction_type === 'transfer').length}
+                    {statisticsLoading ? '...' : (statistics?.transfer_count || 0)}
                   </dd>
                 </dl>
               </div>
@@ -166,10 +155,10 @@ export default function TransactionMonitoring() {
                 }}
                 className="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
               >
-                <option value="">选择账户</option>
+                <option value="">所有账户</option>
                 {accounts?.map((account) => (
                   <option key={account.id} value={account.id}>
-                    {account.account_number} ({account.account_type})
+                    {account.account_number} ({account.account_type}) - {account.real_name || account.username}
                   </option>
                 ))}
               </select>
@@ -188,7 +177,8 @@ export default function TransactionMonitoring() {
                 <option value="">所有类型</option>
                 <option value="deposit">存款</option>
                 <option value="withdrawal">取款</option>
-                <option value="transfer">转账</option>
+                <option value="transfer_out">转出</option>
+                <option value="transfer_in">转入</option>
                 <option value="investment_purchase">理财申购</option>
                 <option value="investment_redemption">理财赎回</option>
               </select>
@@ -208,7 +198,7 @@ export default function TransactionMonitoring() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
-                  placeholder="搜索描述、用户名..."
+                  placeholder="搜索用户名、真实姓名..."
                 />
               </div>
             </div>
@@ -224,19 +214,11 @@ export default function TransactionMonitoring() {
               交易记录
             </h3>
             <div className="text-sm text-gray-500">
-              {selectedAccountId ? `显示 ${filteredTransactions.length} 条记录` : '请选择账户'}
+              显示 {transactions.length} 条记录 (共 {transactionsData?.total_count || 0} 条)
             </div>
           </div>
 
-          {!selectedAccountId ? (
-            <div className="text-center py-12">
-              <ArrowsRightLeftIcon className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">请选择账户</h3>
-              <p className="mt-1 text-sm text-gray-500">
-                选择一个账户来查看交易记录
-              </p>
-            </div>
-          ) : transactionsLoading ? (
+          {transactionsLoading ? (
             <div className="flex justify-center py-12">
               <LoadingSpinner />
             </div>
@@ -248,17 +230,17 @@ export default function TransactionMonitoring() {
                 无法加载交易记录，请稍后重试
               </p>
             </div>
-          ) : filteredTransactions.length === 0 ? (
+          ) : transactions.length === 0 ? (
             <div className="text-center py-12">
               <ArrowsRightLeftIcon className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-2 text-sm font-medium text-gray-900">暂无交易记录</h3>
               <p className="mt-1 text-sm text-gray-500">
-                {searchTerm || transactionType ? '没有符合条件的交易记录' : '该账户暂无交易记录'}
+                {searchTerm || transactionType || selectedAccountId ? '没有符合条件的交易记录' : '系统暂无交易记录'}
               </p>
             </div>
           ) : (
             <div className="space-y-4">
-              {filteredTransactions.map((transaction) => (
+              {transactions.map((transaction) => (
                 <TransactionCard
                   key={transaction.id}
                   transaction={transaction}

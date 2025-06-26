@@ -29,8 +29,8 @@ export default function DashboardPage() {
   const hasAccounts = accounts && accounts.length > 0
   const recentTransactionCount = recentTransactions?.length || 0
 
-  // Handle create account button click
-  const handleCreateAccountClick = () => {
+  // Handle create account button click from onboarding area (with KYC guidance)
+  const handleOnboardingCreateAccountClick = () => {
     if (!isKYCCompleted) {
       // If KYC not completed, start onboarding flow
       setIsOnboardingFlowOpen(true)
@@ -38,6 +38,12 @@ export default function DashboardPage() {
       // If KYC completed, show regular create account modal
       setIsCreateModalOpen(true)
     }
+  }
+
+  // Handle create account button click from quick actions (direct account creation)
+  const handleQuickCreateAccountClick = () => {
+    // Always show regular create account modal, no KYC guidance
+    setIsCreateModalOpen(true)
   }
 
   const formatCurrency = (amount: string) => {
@@ -83,7 +89,7 @@ export default function DashboardPage() {
               </p>
               <div className="mt-4 flex space-x-3">
                 <button
-                  onClick={handleCreateAccountClick}
+                  onClick={handleOnboardingCreateAccountClick}
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
                 >
                   <PlusIcon className="h-4 w-4 mr-2" />
@@ -165,10 +171,10 @@ export default function DashboardPage() {
           <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">快速操作</h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <button
-              onClick={handleCreateAccountClick}
-              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100"
+              onClick={handleQuickCreateAccountClick}
+              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100 text-center"
             >
-              <div>
+              <div className="flex justify-center">
                 <span className="rounded-lg inline-flex p-3 bg-blue-50 text-blue-700 ring-4 ring-white">
                   <PlusIcon className="h-6 w-6" />
                 </span>
@@ -183,9 +189,9 @@ export default function DashboardPage() {
 
             <Link
               to="/accounts"
-              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100"
+              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100 text-center"
             >
-              <div>
+              <div className="flex justify-center">
                 <span className="rounded-lg inline-flex p-3 bg-green-50 text-green-700 ring-4 ring-white">
                   <CreditCardIcon className="h-6 w-6" />
                 </span>
@@ -200,9 +206,9 @@ export default function DashboardPage() {
 
             <Link
               to="/transactions"
-              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100"
+              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100 text-center"
             >
-              <div>
+              <div className="flex justify-center">
                 <span className="rounded-lg inline-flex p-3 bg-purple-50 text-purple-700 ring-4 ring-white">
                   <ArrowsRightLeftIcon className="h-6 w-6" />
                 </span>
@@ -217,9 +223,9 @@ export default function DashboardPage() {
 
             <Link
               to="/investments"
-              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100"
+              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100 text-center"
             >
-              <div>
+              <div className="flex justify-center">
                 <span className="rounded-lg inline-flex p-3 bg-orange-50 text-orange-700 ring-4 ring-white">
                   <ChartBarIcon className="h-6 w-6" />
                 </span>

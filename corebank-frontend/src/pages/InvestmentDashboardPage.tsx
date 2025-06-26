@@ -207,9 +207,9 @@ export default function InvestmentDashboardPage() {
             {/* Browse Products */}
             <Link
               to="/investments/products"
-              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100"
+              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100 text-center"
             >
-              <div>
+              <div className="flex justify-center">
                 <span className="rounded-lg inline-flex p-3 bg-blue-50 text-blue-700 ring-4 ring-white">
                   <EyeIcon className="h-6 w-6" />
                 </span>
@@ -225,9 +225,9 @@ export default function InvestmentDashboardPage() {
             {/* My Holdings */}
             <Link
               to="/investments/holdings"
-              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100"
+              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100 text-center"
             >
-              <div>
+              <div className="flex justify-center">
                 <span className="rounded-lg inline-flex p-3 bg-green-50 text-green-700 ring-4 ring-white">
                   <ChartBarIcon className="h-6 w-6" />
                 </span>
@@ -243,9 +243,9 @@ export default function InvestmentDashboardPage() {
             {/* Transaction History */}
             <Link
               to="/investments/transactions"
-              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100"
+              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100 text-center"
             >
-              <div>
+              <div className="flex justify-center">
                 <span className="rounded-lg inline-flex p-3 bg-purple-50 text-purple-700 ring-4 ring-white">
                   <ArrowPathIcon className="h-6 w-6" />
                 </span>
@@ -261,9 +261,9 @@ export default function InvestmentDashboardPage() {
             {/* Risk Assessment */}
             <Link
               to="/investments/risk-assessment"
-              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100"
+              className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100 text-center"
             >
-              <div>
+              <div className="flex justify-center">
                 <span className="rounded-lg inline-flex p-3 bg-yellow-50 text-yellow-700 ring-4 ring-white">
                   <ShieldCheckIcon className="h-6 w-6" />
                 </span>
