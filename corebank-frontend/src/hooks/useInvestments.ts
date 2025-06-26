@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 import apiClient from '../api/client'
+import { useTransactionRefresh } from './useTransactionRefresh'
 import type { 
   InvestmentProduct, 
   RiskAssessment, 
@@ -81,16 +82,20 @@ export function useCreateRiskAssessment() {
 // Investment transaction mutations
 export function usePurchaseInvestment() {
   const queryClient = useQueryClient()
+  const { refreshAllTransactionData } = useTransactionRefresh()
 
   return useMutation({
-    mutationFn: (purchaseData: InvestmentPurchaseRequest) => 
+    mutationFn: (purchaseData: InvestmentPurchaseRequest) =>
       apiClient.purchaseInvestment(purchaseData),
     onSuccess: () => {
-      // Invalidate related queries
+      // Invalidate investment-specific queries
       queryClient.invalidateQueries({ queryKey: investmentKeys.holdings() })
       queryClient.invalidateQueries({ queryKey: investmentKeys.portfolio() })
       queryClient.invalidateQueries({ queryKey: investmentKeys.transactions() })
-      queryClient.invalidateQueries({ queryKey: ['accounts'] }) // Update account balances
+
+      // Refresh all transaction-related data
+      refreshAllTransactionData()
+
       console.log('Investment purchase successful')
     },
     onError: (error: AxiosError<ApiError>) => {
@@ -101,16 +106,20 @@ export function usePurchaseInvestment() {
 
 export function useRedeemInvestment() {
   const queryClient = useQueryClient()
+  const { refreshAllTransactionData } = useTransactionRefresh()
 
   return useMutation({
-    mutationFn: (redemptionData: InvestmentRedemptionRequest) => 
+    mutationFn: (redemptionData: InvestmentRedemptionRequest) =>
       apiClient.redeemInvestment(redemptionData),
     onSuccess: () => {
-      // Invalidate related queries
+      // Invalidate investment-specific queries
       queryClient.invalidateQueries({ queryKey: investmentKeys.holdings() })
       queryClient.invalidateQueries({ queryKey: investmentKeys.portfolio() })
       queryClient.invalidateQueries({ queryKey: investmentKeys.transactions() })
-      queryClient.invalidateQueries({ queryKey: ['accounts'] }) // Update account balances
+
+      // Refresh all transaction-related data
+      refreshAllTransactionData()
+
       console.log('Investment redemption successful')
     },
     onError: (error: AxiosError<ApiError>) => {

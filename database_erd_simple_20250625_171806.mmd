@@ -1,0 +1,82 @@
+erDiagram
+
+    ACCOUNTS {
+        uuid id PK
+        varchar account_number
+        uuid user_id FK
+        varchar account_type
+        decimal balance
+    }
+
+    INVESTMENT_HOLDINGS {
+        uuid id PK
+        uuid user_id FK
+        uuid product_id FK
+        decimal shares
+        decimal current_value
+    }
+
+    INVESTMENT_PRODUCTS {
+        uuid id PK
+        varchar product_code
+        varchar name
+        varchar product_type
+        int risk_level
+    }
+
+    INVESTMENT_TRANSACTIONS {
+        uuid id PK
+        uuid user_id FK
+        uuid product_id FK
+        varchar transaction_type
+        decimal amount
+    }
+
+    PRODUCT_NAV_HISTORY {
+        uuid id PK
+        uuid product_id FK
+        date nav_date
+        decimal unit_nav
+    }
+
+    TRANSACTIONS {
+        uuid id PK
+        uuid account_id FK
+        varchar transaction_type
+        decimal amount
+        timestamp timestamp
+    }
+
+    USER_PROFILES {
+        uuid id PK
+        uuid user_id FK
+        varchar real_name
+        varchar phone
+        varchar email
+    }
+
+    USER_RISK_ASSESSMENTS {
+        uuid id PK
+        uuid user_id FK
+        int risk_tolerance
+        int assessment_score
+    }
+
+    USERS {
+        uuid id PK
+        varchar username
+        timestamp created_at
+    }
+
+    USERS ||--o{ ACCOUNTS : "1:N"
+    USERS ||--o{ INVESTMENT_HOLDINGS : "1:N"
+    ACCOUNTS ||--o{ INVESTMENT_HOLDINGS : "1:N"
+    INVESTMENT_PRODUCTS ||--o{ INVESTMENT_HOLDINGS : "1:N"
+    USERS ||--o{ INVESTMENT_TRANSACTIONS : "1:N"
+    ACCOUNTS ||--o{ INVESTMENT_TRANSACTIONS : "1:N"
+    INVESTMENT_PRODUCTS ||--o{ INVESTMENT_TRANSACTIONS : "1:N"
+    INVESTMENT_HOLDINGS ||--o{ INVESTMENT_TRANSACTIONS : "1:N"
+    INVESTMENT_PRODUCTS ||--o{ PRODUCT_NAV_HISTORY : "1:N"
+    ACCOUNTS ||--o{ TRANSACTIONS : "1:N"
+    USERS ||--|| USER_PROFILES : "1:1"
+    USERS ||--o{ USER_RISK_ASSESSMENTS : "1:N"

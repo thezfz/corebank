@@ -6,12 +6,13 @@ This module provides endpoints for user registration, login, and token managemen
 
 import logging
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from corebank.api.v1.dependencies import get_postgres_repository, get_current_user
-from corebank.models.user import UserCreate, UserLogin, UserResponse
+from corebank.api.v1.dependencies import get_postgres_repository, get_current_user, get_current_user_id
+from corebank.models.user import UserCreate, UserLogin, UserResponse, UserDetailResponse, UserProfileUpdate
 from corebank.models.common import Token, MessageResponse
 from corebank.repositories.postgres_repo import PostgresRepository
 from corebank.security.password import hash_password, verify_password, validate_password_strength
@@ -233,6 +234,95 @@ async def validate_token(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Token validation failed"
+        )
+
+
+@router.get("/me/profile", response_model=UserDetailResponse)
+async def get_current_user_profile(
+    current_user_id: Annotated[UUID, Depends(get_current_user_id)],
+    repository: Annotated[PostgresRepository, Depends(get_postgres_repository)]
+) -> UserDetailResponse:
+    """
+    Get current user with profile information.
+
+    Args:
+        current_user_id: Current user ID from token
+        repository: Repository dependency
+
+    Returns:
+        UserDetailResponse: Current user with profile information
+    """
+    try:
+        user_with_profile = await repository.get_user_with_profile(current_user_id)
+
+        if not user_with_profile:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+
+        return UserDetailResponse(**user_with_profile)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get user profile: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get user profile"
+        )
+
+
+@router.put("/me/profile", response_model=UserDetailResponse)
+async def update_current_user_profile(
+    profile_data: UserProfileUpdate,
+    current_user_id: Annotated[UUID, Depends(get_current_user_id)],
+    repository: Annotated[PostgresRepository, Depends(get_postgres_repository)]
+) -> UserDetailResponse:
+    """
+    Update current user profile information.
+
+    Args:
+        profile_data: Profile data to update
+        current_user_id: Current user ID from token
+        repository: Repository dependency
+
+    Returns:
+        UserDetailResponse: Updated user with profile information
+    """
+    try:
+        # Convert profile data to dict, excluding None values
+        profile_dict = profile_data.model_dump(exclude_none=True)
+
+        if not profile_dict:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No profile data provided"
+            )
+
+        # Update profile
+        await repository.create_or_update_user_profile(current_user_id, profile_dict)
+
+        # Get updated user with profile
+        user_with_profile = await repository.get_user_with_profile(current_user_id)
+
+        if not user_with_profile:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+
+        logger.info(f"Updated profile for user {current_user_id}")
+
+        return UserDetailResponse(**user_with_profile)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to update user profile: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update user profile"
         )
 
 

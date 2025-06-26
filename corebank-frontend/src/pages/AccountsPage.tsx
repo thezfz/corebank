@@ -2,11 +2,18 @@ import { useState } from 'react'
 import { PlusIcon } from '@heroicons/react/24/outline'
 import { useAccounts, useAccountSummary } from '../hooks/useAccounts'
 import CreateAccountModal from '../components/accounts/CreateAccountModal'
+import AccountDetailModal from '../components/accounts/AccountDetailModal'
+import CrossUserTransferModal from '../components/transactions/CrossUserTransferModal'
 import AccountCard from '../components/accounts/AccountCard'
 import LoadingSpinner from '../components/common/LoadingSpinner'
+import type { Account } from '../types/api'
 
 export default function AccountsPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null)
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
+  const [transferFromAccountId, setTransferFromAccountId] = useState<string>('')
   const { data: accounts, isLoading: accountsLoading, error: accountsError } = useAccounts()
   const { data: summary, isLoading: summaryLoading } = useAccountSummary()
 
@@ -20,6 +27,26 @@ export default function AccountsPage() {
       currency: 'CNY',
       minimumFractionDigits: 2,
     }).format(num)
+  }
+
+  const handleAccountClick = (account: Account) => {
+    setSelectedAccount(account)
+    setIsDetailModalOpen(true)
+  }
+
+  const handleCloseDetailModal = () => {
+    setIsDetailModalOpen(false)
+    setSelectedAccount(null)
+  }
+
+  const handleOpenTransferModal = (accountId: string) => {
+    setTransferFromAccountId(accountId)
+    setIsTransferModalOpen(true)
+  }
+
+  const handleCloseTransferModal = () => {
+    setIsTransferModalOpen(false)
+    setTransferFromAccountId('')
   }
 
   if (isLoading) {
@@ -138,10 +165,7 @@ export default function AccountsPage() {
               <AccountCard
                 key={account.id}
                 account={account}
-                onClick={() => {
-                  // TODO: Navigate to account detail page
-                  console.log('Navigate to account:', account.id)
-                }}
+                onClick={() => handleAccountClick(account)}
               />
             ))}
           </div>
@@ -172,6 +196,36 @@ export default function AccountsPage() {
       <CreateAccountModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={() => {
+          // Modal will close automatically, accounts will refetch due to query invalidation
+        }}
+      />
+
+      {/* Account Detail Modal */}
+      {selectedAccount && (
+        <AccountDetailModal
+          isOpen={isDetailModalOpen}
+          onClose={handleCloseDetailModal}
+          account={selectedAccount}
+          onTransfer={(accountId) => {
+            handleOpenTransferModal(accountId)
+          }}
+          onDeposit={(accountId) => {
+            // TODO: Open deposit modal with preselected account
+            console.log('Deposit to account:', accountId)
+          }}
+          onWithdraw={(accountId) => {
+            // TODO: Open withdraw modal with preselected account
+            console.log('Withdraw from account:', accountId)
+          }}
+        />
+      )}
+
+      {/* Cross User Transfer Modal */}
+      <CrossUserTransferModal
+        isOpen={isTransferModalOpen}
+        onClose={handleCloseTransferModal}
+        preselectedFromAccountId={transferFromAccountId}
         onSuccess={() => {
           // Modal will close automatically, accounts will refetch due to query invalidation
         }}

@@ -95,6 +95,13 @@ services:
     container_name: corebank_frontend
     environment:
       - NODE_ENV=development
+      # Override proxy settings for frontend to allow container-to-container communication
+      - http_proxy=
+      - https_proxy=
+      - HTTP_PROXY=
+      - HTTPS_PROXY=
+      - no_proxy=*
+      - NO_PROXY=*
     ports:
       - "3000:5173"
     volumes:

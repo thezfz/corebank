@@ -8,16 +8,17 @@ import {
 } from '@heroicons/react/24/outline'
 import { useAccounts } from '../hooks/useAccounts'
 import { useAccountTransactions } from '../hooks/useTransactions'
+import { useEnhancedAccountTransactions } from '../hooks/useEnhancedTransactions'
 import DepositModal from '../components/transactions/DepositModal'
 import WithdrawModal from '../components/transactions/WithdrawModal'
-import TransferModal from '../components/transactions/TransferModal'
+import CrossUserTransferModal from '../components/transactions/CrossUserTransferModal'
 import TransactionCard from '../components/transactions/TransactionCard'
 import LoadingSpinner from '../components/common/LoadingSpinner'
 
 export default function TransactionsPage() {
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false)
-  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
+  const [isCrossUserTransferModalOpen, setIsCrossUserTransferModalOpen] = useState(false)
   const [selectedAccountId, setSelectedAccountId] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -26,7 +27,7 @@ export default function TransactionsPage() {
     data: transactionsData,
     isLoading: transactionsLoading,
     error: transactionsError
-  } = useAccountTransactions(selectedAccountId, currentPage)
+  } = useEnhancedAccountTransactions(selectedAccountId, currentPage, 20, !!selectedAccountId)
 
   const hasAccounts = accounts && accounts.length > 0
 
@@ -103,7 +104,7 @@ export default function TransactionsPage() {
               取款
             </button>
             <button
-              onClick={() => setIsTransferModalOpen(true)}
+              onClick={() => setIsCrossUserTransferModalOpen(true)}
               className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               <ArrowsRightLeftIcon className="h-4 w-4 mr-1" />
@@ -251,7 +252,7 @@ export default function TransactionsPage() {
                 存款
               </button>
               <button
-                onClick={() => setIsTransferModalOpen(true)}
+                onClick={() => setIsCrossUserTransferModalOpen(true)}
                 className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 <ArrowsRightLeftIcon className="h-4 w-4 mr-2" />
@@ -281,9 +282,9 @@ export default function TransactionsPage() {
         }}
       />
 
-      <TransferModal
-        isOpen={isTransferModalOpen}
-        onClose={() => setIsTransferModalOpen(false)}
+      <CrossUserTransferModal
+        isOpen={isCrossUserTransferModalOpen}
+        onClose={() => setIsCrossUserTransferModalOpen(false)}
         preselectedFromAccountId={activeAccountId}
         onSuccess={() => {
           // Modal will close automatically, transactions will refetch due to query invalidation

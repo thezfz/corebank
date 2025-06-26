@@ -263,18 +263,18 @@ class InvestmentService:
                     )
                 
                 # Add to account balance
-                account = await self.repository.get_account(holding.account_id)
+                account = await self.repository.get_account_by_id(holding.get('account_id'))
                 await self.repository.update_account_balance(
-                    holding.account_id, 
-                    account.balance + net_amount
+                    holding.get('account_id'),
+                    account.get('balance') + net_amount
                 )
                 
                 # Create transaction record
                 transaction_data = {
                     "user_id": user_id,
-                    "account_id": holding.account_id,
-                    "product_id": holding.product_id,
-                    "holding_id": holding.id,
+                    "account_id": holding.get('account_id'),
+                    "product_id": holding.get('product_id'),
+                    "holding_id": holding.get('id'),
                     "transaction_type": TransactionType.REDEMPTION.value,
                     "shares": shares_to_redeem,
                     "unit_price": unit_price,
@@ -283,7 +283,7 @@ class InvestmentService:
                     "net_amount": net_amount,
                     "status": TransactionStatus.CONFIRMED.value,
                     "settlement_date": datetime.now(timezone.utc),
-                    "description": f"Redeem {holding.product_name}"
+                    "description": f"Redeem {holding.get('product_name')}"
                 }
                 
                 transaction = await self.repository.create_investment_transaction(transaction_data)
@@ -355,35 +355,38 @@ class InvestmentService:
     async def get_portfolio_summary(self, user_id: UUID) -> PortfolioSummaryResponse:
         """Get user's portfolio summary."""
         try:
-            holdings = await self.get_user_holdings(user_id)
-            
-            total_assets = sum(holding.current_value for holding in holdings)
-            total_invested = sum(holding.total_invested for holding in holdings)
+            all_holdings = await self.get_user_holdings(user_id)
+
+            # Only include active holdings in portfolio calculations
+            active_holdings = [h for h in all_holdings if h.status == HoldingStatus.ACTIVE]
+
+            total_assets = sum(holding.current_value for holding in active_holdings)
+            total_invested = sum(holding.total_invested for holding in active_holdings)
             total_gain_loss = total_assets - total_invested
             total_return_rate = (total_gain_loss / total_invested * 100) if total_invested > 0 else Decimal('0')
-            
-            # Calculate asset allocation
+
+            # Calculate asset allocation (only for active holdings)
             asset_allocation = {}
-            for holding in holdings:
+            for holding in active_holdings:
                 product_type = holding.product_type
                 if product_type not in asset_allocation:
                     asset_allocation[product_type] = Decimal('0')
                 asset_allocation[product_type] += holding.current_value
-            
+
             # Convert to percentages
             if total_assets > 0:
                 asset_allocation = {
                     k: (v / total_assets * 100) for k, v in asset_allocation.items()
                 }
-            
+
             return PortfolioSummaryResponse(
                 total_assets=total_assets,
                 total_invested=total_invested,
                 total_gain_loss=total_gain_loss,
                 total_return_rate=total_return_rate,
                 asset_allocation=asset_allocation,
-                holdings_count=len(holdings),
-                active_products_count=len([h for h in holdings if h.status == HoldingStatus.ACTIVE])
+                holdings_count=len(all_holdings),
+                active_products_count=len(active_holdings)
             )
             
         except Exception as e:

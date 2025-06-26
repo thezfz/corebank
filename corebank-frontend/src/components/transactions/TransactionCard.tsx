@@ -1,20 +1,28 @@
-import { 
-  ArrowDownIcon, 
-  ArrowUpIcon, 
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
   ArrowsRightLeftIcon,
   CheckCircleIcon,
   ClockIcon,
   XCircleIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  PlusIcon,
+  MinusIcon,
+  ChartBarIcon,
+  BanknotesIcon
 } from '@heroicons/react/24/outline'
-import type { Transaction } from '../../types/api'
+import type { Transaction, EnhancedTransaction } from '../../types/api'
 
 interface TransactionCardProps {
-  transaction: Transaction
+  transaction: Transaction | EnhancedTransaction
   onClick?: () => void
 }
 
 export default function TransactionCard({ transaction, onClick }: TransactionCardProps) {
+  // Type guard to check if transaction is enhanced
+  const isEnhanced = (tx: Transaction | EnhancedTransaction): tx is EnhancedTransaction => {
+    return 'related_user_name' in tx
+  }
   const formatCurrency = (amount: string) => {
     const num = parseFloat(amount)
     return new Intl.NumberFormat('zh-CN', {
@@ -38,11 +46,15 @@ export default function TransactionCard({ transaction, onClick }: TransactionCar
   const getTransactionIcon = (type: string) => {
     switch (type) {
       case 'deposit':
-        return ArrowDownIcon
+        return PlusIcon
       case 'withdrawal':
-        return ArrowUpIcon
+        return MinusIcon
       case 'transfer':
         return ArrowsRightLeftIcon
+      case '理财申购':
+        return ChartBarIcon
+      case '理财赎回':
+        return BanknotesIcon
       default:
         return ArrowsRightLeftIcon
     }
@@ -56,6 +68,10 @@ export default function TransactionCard({ transaction, onClick }: TransactionCar
         return '取款'
       case 'transfer':
         return '转账'
+      case '理财申购':
+        return '理财申购'
+      case '理财赎回':
+        return '理财赎回'
       default:
         return type
     }
@@ -106,27 +122,35 @@ export default function TransactionCard({ transaction, onClick }: TransactionCar
     }
   }
 
-  const getAmountColor = (type: string) => {
+  const getAmountColor = (type: string, isOutgoing?: boolean) => {
     switch (type) {
       case 'deposit':
         return 'text-green-600'
       case 'withdrawal':
         return 'text-red-600'
       case 'transfer':
+        return isOutgoing ? 'text-red-600' : 'text-green-600'
+      case '理财申购':
+        return 'text-orange-600'
+      case '理财赎回':
         return 'text-blue-600'
       default:
         return 'text-gray-600'
     }
   }
 
-  const getAmountPrefix = (type: string) => {
+  const getAmountPrefix = (type: string, isOutgoing?: boolean) => {
     switch (type) {
       case 'deposit':
         return '+'
       case 'withdrawal':
         return '-'
       case 'transfer':
-        return ''
+        return isOutgoing ? '-' : '+'
+      case '理财申购':
+        return '-'
+      case '理财赎回':
+        return '+'
       default:
         return ''
     }
@@ -135,6 +159,7 @@ export default function TransactionCard({ transaction, onClick }: TransactionCar
   const Icon = getTransactionIcon(transaction.transaction_type)
   const StatusIcon = getStatusIcon(transaction.status)
   const { date, time } = formatDateTime(transaction.timestamp)
+  const enhanced = isEnhanced(transaction) ? transaction : null
 
   return (
     <div 
@@ -150,12 +175,20 @@ export default function TransactionCard({ transaction, onClick }: TransactionCar
           <div className={`p-2 rounded-lg ${
             transaction.transaction_type === 'deposit' ? 'bg-green-100' :
             transaction.transaction_type === 'withdrawal' ? 'bg-red-100' :
-            'bg-blue-100'
+            transaction.transaction_type === 'transfer' ?
+              (enhanced?.is_outgoing ? 'bg-red-100' : 'bg-green-100') :
+            transaction.transaction_type === '理财申购' ? 'bg-orange-100' :
+            transaction.transaction_type === '理财赎回' ? 'bg-blue-100' :
+            'bg-gray-100'
           }`}>
             <Icon className={`h-5 w-5 ${
               transaction.transaction_type === 'deposit' ? 'text-green-600' :
               transaction.transaction_type === 'withdrawal' ? 'text-red-600' :
-              'text-blue-600'
+              transaction.transaction_type === 'transfer' ?
+                (enhanced?.is_outgoing ? 'text-red-600' : 'text-green-600') :
+              transaction.transaction_type === '理财申购' ? 'text-orange-600' :
+              transaction.transaction_type === '理财赎回' ? 'text-blue-600' :
+              'text-gray-600'
             }`} />
           </div>
 
@@ -163,9 +196,12 @@ export default function TransactionCard({ transaction, onClick }: TransactionCar
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2 mb-1">
               <h3 className="text-sm font-medium text-gray-900">
-                {getTransactionLabel(transaction.transaction_type)}
+                {transaction.transaction_type === 'transfer' && enhanced ?
+                  `转账-${enhanced.is_outgoing ? '转给' : '来自'}${enhanced.related_user_name || '未知用户'}` :
+                  getTransactionLabel(transaction.transaction_type)
+                }
               </h3>
-              
+
               {/* Status Badge */}
               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(transaction.status)}`}>
                 <StatusIcon className="h-3 w-3 mr-1" />
@@ -180,8 +216,24 @@ export default function TransactionCard({ transaction, onClick }: TransactionCar
               </p>
             )}
 
-            {/* Related Account Info for Transfers */}
-            {transaction.transaction_type === 'transfer' && transaction.related_account_id && (
+            {/* Enhanced Transfer Info */}
+            {transaction.transaction_type === 'transfer' && enhanced && (
+              <div className="space-y-1">
+                {enhanced.related_account_number && (
+                  <p className="text-xs text-gray-500">
+                    对方账户：{enhanced.related_account_number}
+                  </p>
+                )}
+                {enhanced.related_user_phone && (
+                  <p className="text-xs text-gray-500">
+                    对方手机号：{enhanced.related_user_phone}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Fallback for non-enhanced transfers */}
+            {transaction.transaction_type === 'transfer' && !enhanced && transaction.related_account_id && (
               <p className="text-xs text-gray-500">
                 相关账户: **** {transaction.related_account_id.slice(-4)}
               </p>
@@ -198,8 +250,8 @@ export default function TransactionCard({ transaction, onClick }: TransactionCar
 
         {/* Right side - Amount */}
         <div className="text-right">
-          <p className={`text-lg font-semibold ${getAmountColor(transaction.transaction_type)}`}>
-            {getAmountPrefix(transaction.transaction_type)}{formatCurrency(transaction.amount)}
+          <p className={`text-lg font-semibold ${getAmountColor(transaction.transaction_type, enhanced?.is_outgoing)}`}>
+            {getAmountPrefix(transaction.transaction_type, enhanced?.is_outgoing)}{formatCurrency(transaction.amount)}
           </p>
           <p className="text-xs text-gray-500 mt-1">
             ID: {transaction.id.slice(0, 8)}...

@@ -1,13 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 import apiClient from '../api/client'
-import type { 
-  Transaction, 
-  DepositRequest, 
-  WithdrawalRequest, 
+import { useTransactionRefresh } from './useTransactionRefresh'
+import type {
+  Transaction,
+  DepositRequest,
+  WithdrawalRequest,
   TransferRequest,
+  TransferByAccountNumberRequest,
+  AccountLookupResponse,
   PaginatedResponse,
-  ApiError 
+  ApiError
 } from '../types/api'
 
 // Query keys
@@ -50,21 +53,14 @@ export function useRecentTransactions(limit = 5) {
 
 // Deposit mutation
 export function useDeposit() {
-  const queryClient = useQueryClient()
+  const { refreshAllTransactionData } = useTransactionRefresh()
 
   return useMutation({
     mutationFn: (depositData: DepositRequest) => apiClient.deposit(depositData),
     onSuccess: (transaction: Transaction) => {
-      // Invalidate account transactions
-      queryClient.invalidateQueries({ 
-        queryKey: transactionKeys.lists() 
-      })
-      
-      // Invalidate account data to update balance
-      queryClient.invalidateQueries({ 
-        queryKey: ['accounts'] 
-      })
-      
+      // Refresh all transaction-related data
+      refreshAllTransactionData()
+
       console.log('Deposit successful:', transaction.id)
     },
     onError: (error: AxiosError<ApiError>) => {
@@ -75,21 +71,14 @@ export function useDeposit() {
 
 // Withdrawal mutation
 export function useWithdraw() {
-  const queryClient = useQueryClient()
+  const { refreshAllTransactionData } = useTransactionRefresh()
 
   return useMutation({
     mutationFn: (withdrawalData: WithdrawalRequest) => apiClient.withdraw(withdrawalData),
     onSuccess: (transaction: Transaction) => {
-      // Invalidate account transactions
-      queryClient.invalidateQueries({ 
-        queryKey: transactionKeys.lists() 
-      })
-      
-      // Invalidate account data to update balance
-      queryClient.invalidateQueries({ 
-        queryKey: ['accounts'] 
-      })
-      
+      // Refresh all transaction-related data
+      refreshAllTransactionData()
+
       console.log('Withdrawal successful:', transaction.id)
     },
     onError: (error: AxiosError<ApiError>) => {
@@ -98,28 +87,50 @@ export function useWithdraw() {
   })
 }
 
-// Transfer mutation
+// Legacy transfer mutation (kept for backward compatibility)
 export function useTransfer() {
-  const queryClient = useQueryClient()
+  const { refreshAllTransactionData } = useTransactionRefresh()
 
   return useMutation({
     mutationFn: (transferData: TransferRequest) => apiClient.transfer(transferData),
     onSuccess: (transactions: Transaction[]) => {
-      // Invalidate account transactions
-      queryClient.invalidateQueries({ 
-        queryKey: transactionKeys.lists() 
-      })
-      
-      // Invalidate account data to update balances
-      queryClient.invalidateQueries({ 
-        queryKey: ['accounts'] 
-      })
-      
+      // Refresh all transaction-related data
+      refreshAllTransactionData()
+
       console.log('Transfer successful:', transactions.map(t => t.id))
     },
     onError: (error: AxiosError<ApiError>) => {
       console.error('Transfer failed:', error)
     }
+  })
+}
+
+// Transfer by account number mutation
+export function useTransferByAccountNumber() {
+  const { refreshAllTransactionData } = useTransactionRefresh()
+
+  return useMutation({
+    mutationFn: (transferData: TransferByAccountNumberRequest) => apiClient.transferByAccountNumber(transferData),
+    onSuccess: (transactions: Transaction[]) => {
+      // Refresh all transaction-related data
+      refreshAllTransactionData()
+
+      console.log('Transfer by account number successful:', transactions.map(t => t.id))
+    },
+    onError: (error: AxiosError<ApiError>) => {
+      console.error('Transfer by account number failed:', error)
+    }
+  })
+}
+
+// Account lookup query
+export function useAccountLookup(accountNumber: string, enabled: boolean = false) {
+  return useQuery({
+    queryKey: ['account-lookup', accountNumber],
+    queryFn: () => apiClient.lookupAccountByNumber(accountNumber),
+    enabled: enabled && !!accountNumber,
+    retry: false, // Don't retry on failed lookups
+    staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
 
@@ -155,24 +166,31 @@ export function useTransactionOperations() {
   const depositMutation = useDeposit()
   const withdrawMutation = useWithdraw()
   const transferMutation = useTransfer()
-  
+  const transferByAccountNumberMutation = useTransferByAccountNumber()
+
   return {
     // Deposit
     deposit: depositMutation.mutate,
     isDepositing: depositMutation.isPending,
     depositError: depositMutation.error,
     depositErrorMessages: depositMutation.error ? parseTransactionError(depositMutation.error) : [],
-    
+
     // Withdrawal
     withdraw: withdrawMutation.mutate,
     isWithdrawing: withdrawMutation.isPending,
     withdrawError: withdrawMutation.error,
     withdrawErrorMessages: withdrawMutation.error ? parseTransactionError(withdrawMutation.error) : [],
-    
+
     // Transfer
     transfer: transferMutation.mutate,
     isTransferring: transferMutation.isPending,
     transferError: transferMutation.error,
     transferErrorMessages: transferMutation.error ? parseTransactionError(transferMutation.error) : [],
+
+    // Transfer by account number
+    transferByAccountNumber: transferByAccountNumberMutation.mutate,
+    isTransferringByAccountNumber: transferByAccountNumberMutation.isPending,
+    transferByAccountNumberError: transferByAccountNumberMutation.error,
+    transferByAccountNumberErrorMessages: transferByAccountNumberMutation.error ? parseTransactionError(transferByAccountNumberMutation.error) : [],
   }
 }

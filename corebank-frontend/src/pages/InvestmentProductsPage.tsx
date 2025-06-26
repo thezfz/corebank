@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { 
+import {
   FunnelIcon,
   MagnifyingGlassIcon,
   ShoppingCartIcon,
@@ -263,16 +262,10 @@ export default function InvestmentProductsPage() {
                 )}
 
                 {/* Actions */}
-                <div className="flex space-x-3">
-                  <Link
-                    to={`/investments/products/${product.id}`}
-                    className="flex-1 bg-blue-600 text-white text-center px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    查看详情
-                  </Link>
+                <div className="flex justify-end">
                   <button
                     onClick={() => handlePurchaseClick(product)}
-                    className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                    className="w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
                     立即购买
                   </button>

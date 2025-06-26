@@ -100,7 +100,7 @@ class AccountBalance(BaseModel):
 
 class AccountSummary(BaseModel):
     """Model for account summary response."""
-    
+
     total_accounts: int = Field(..., description="Total number of accounts")
     total_balance: Decimal = Field(
         ...,
@@ -112,7 +112,20 @@ class AccountSummary(BaseModel):
         ...,
         description="Count of accounts by type"
     )
-    
+
+    class Config:
+        """Pydantic configuration."""
+        from_attributes = True
+
+
+class AccountLookupResponse(BaseModel):
+    """Model for account lookup response (for transfer purposes)."""
+
+    account_id: UUID = Field(..., description="Account unique identifier")
+    account_number: str = Field(..., description="Account number")
+    account_type: AccountType = Field(..., description="Account type")
+    owner_name: Optional[str] = Field(None, description="Account owner name (if available)")
+
     class Config:
         """Pydantic configuration."""
         from_attributes = True

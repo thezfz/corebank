@@ -13,8 +13,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from corebank.api.v1.dependencies import get_current_user_id, get_transaction_service
 from corebank.models.transaction import (
-    DepositRequest, WithdrawalRequest, TransferRequest,
-    TransactionResponse, TransactionSummary
+    DepositRequest, WithdrawalRequest, TransferRequest, TransferByAccountNumberRequest,
+    TransactionResponse, TransactionSummary, EnhancedTransactionResponse
 )
 from corebank.models.common import PaginationParams, PaginatedResponse
 from corebank.services.transaction_service import TransactionService
@@ -156,6 +156,52 @@ async def transfer_funds(
         )
 
 
+@router.post("/transfer-by-account", response_model=list[TransactionResponse], status_code=status.HTTP_201_CREATED)
+async def transfer_by_account_number(
+    transfer_request: TransferByAccountNumberRequest,
+    current_user_id: Annotated[UUID, Depends(get_current_user_id)],
+    transaction_service: Annotated[TransactionService, Depends(get_transaction_service)]
+) -> list[TransactionResponse]:
+    """
+    Transfer funds to an account using account number.
+
+    Args:
+        transfer_request: Transfer request data with account number
+        current_user_id: Current user ID
+        transaction_service: Transaction service dependency
+
+    Returns:
+        list[TransactionResponse]: Source and target transaction details
+
+    Raises:
+        HTTPException: If transfer fails
+    """
+    try:
+        from_transaction, to_transaction = await transaction_service.transfer_by_account_number(
+            current_user_id, transfer_request
+        )
+
+        logger.info(
+            f"Transfer by account number successful: {transfer_request.amount} from "
+            f"{transfer_request.from_account_id} to {transfer_request.to_account_number} "
+            f"by user {current_user_id}"
+        )
+
+        return [from_transaction, to_transaction]
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(f"Transfer by account number failed for user {current_user_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Transfer transaction failed"
+        )
+
+
 @router.get("/recent", response_model=PaginatedResponse[TransactionResponse])
 async def get_recent_transactions(
     current_user_id: Annotated[UUID, Depends(get_current_user_id)],
@@ -250,6 +296,60 @@ async def get_account_transactions(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve transaction history"
+        )
+
+
+@router.get("/accounts/{account_id}/enhanced", response_model=PaginatedResponse[EnhancedTransactionResponse])
+async def get_enhanced_account_transactions(
+    account_id: UUID,
+    current_user_id: Annotated[UUID, Depends(get_current_user_id)],
+    transaction_service: Annotated[TransactionService, Depends(get_transaction_service)],
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(20, ge=1, le=100, description="Items per page")
+) -> PaginatedResponse[EnhancedTransactionResponse]:
+    """
+    Get enhanced transaction history for an account with related user information.
+
+    Args:
+        account_id: Account ID
+        current_user_id: Current user ID
+        transaction_service: Transaction service dependency
+        page: Page number
+        page_size: Items per page
+
+    Returns:
+        PaginatedResponse[EnhancedTransactionResponse]: Paginated enhanced transaction history
+
+    Raises:
+        HTTPException: If retrieval fails
+    """
+    try:
+        pagination = PaginationParams(page=page, page_size=page_size)
+
+        transactions = await transaction_service.get_enhanced_transaction_history(
+            current_user_id, account_id, pagination
+        )
+
+        logger.debug(
+            f"Retrieved enhanced transaction history for account {account_id}, "
+            f"page {page}, user {current_user_id}"
+        )
+
+        return transactions
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(
+            f"Failed to retrieve enhanced transactions for account {account_id}, "
+            f"user {current_user_id}: {e}"
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve enhanced transaction history"
         )
 
 

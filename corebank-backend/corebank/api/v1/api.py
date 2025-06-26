@@ -11,7 +11,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 
 from corebank.api.v1.dependencies import get_health_status
-from corebank.api.v1.endpoints import auth, accounts, transactions, investments
+from corebank.api.v1.endpoints import auth, accounts, transactions, investments, admin
 from corebank.models.common import HealthCheck
 from corebank.core.config import settings
 
@@ -25,6 +25,7 @@ api_router.include_router(auth.router)
 api_router.include_router(accounts.router)
 api_router.include_router(transactions.router)
 api_router.include_router(investments.router)
+api_router.include_router(admin.router)
 
 
 @api_router.get("/health", response_model=HealthCheck, tags=["Health"])

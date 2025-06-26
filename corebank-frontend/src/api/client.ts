@@ -1,8 +1,8 @@
 import axios, { AxiosInstance, AxiosError } from 'axios'
 import type {
   User, UserCreate, UserLogin, Token,
-  Account, AccountCreate, AccountSummary,
-  Transaction, DepositRequest, WithdrawalRequest, TransferRequest,
+  Account, AccountCreate, AccountSummary, AccountLookupResponse,
+  Transaction, DepositRequest, WithdrawalRequest, TransferRequest, TransferByAccountNumberRequest,
   PaginatedResponse, ApiError
 } from '../types/api'
 import type {
@@ -86,6 +86,27 @@ class ApiClient {
     return response.data
   }
 
+  // Generic HTTP methods for flexibility
+  async get<T>(url: string, params?: any): Promise<{ data: T }> {
+    const response = await this.client.get<T>(url, { params })
+    return response
+  }
+
+  async post<T>(url: string, data?: any): Promise<{ data: T }> {
+    const response = await this.client.post<T>(url, data)
+    return response
+  }
+
+  async put<T>(url: string, data?: any): Promise<{ data: T }> {
+    const response = await this.client.put<T>(url, data)
+    return response
+  }
+
+  async delete<T>(url: string): Promise<{ data: T }> {
+    const response = await this.client.delete<T>(url)
+    return response
+  }
+
   // Account methods
   async getAccounts(): Promise<Account[]> {
     const response = await this.client.get<Account[]>('/accounts')
@@ -107,6 +128,11 @@ class ApiClient {
     return response.data
   }
 
+  async lookupAccountByNumber(accountNumber: string): Promise<AccountLookupResponse> {
+    const response = await this.client.get<AccountLookupResponse>(`/accounts/lookup/${accountNumber}`)
+    return response.data
+  }
+
   // Transaction methods
   async deposit(depositData: DepositRequest): Promise<Transaction> {
     const response = await this.client.post<Transaction>('/transactions/deposit', depositData)
@@ -120,6 +146,11 @@ class ApiClient {
 
   async transfer(transferData: TransferRequest): Promise<Transaction[]> {
     const response = await this.client.post<Transaction[]>('/transactions/transfer', transferData)
+    return response.data
+  }
+
+  async transferByAccountNumber(transferData: TransferByAccountNumberRequest): Promise<Transaction[]> {
+    const response = await this.client.post<Transaction[]>('/transactions/transfer-by-account', transferData)
     return response.data
   }
 
@@ -198,10 +229,10 @@ class ApiClient {
   async getInvestmentTransactions(params?: {
     product_id?: string
     transaction_type?: string
-    page?: number
-    page_size?: number
-  }): Promise<PaginatedResponse<InvestmentTransaction>> {
-    const response = await this.client.get<PaginatedResponse<InvestmentTransaction>>('/investments/transactions', { params })
+    skip?: number
+    limit?: number
+  }): Promise<InvestmentTransaction[]> {
+    const response = await this.client.get<InvestmentTransaction[]>('/investments/transactions', { params })
     return response.data
   }
 
@@ -213,6 +244,36 @@ class ApiClient {
   // Health check
   async healthCheck(): Promise<{ status: string }> {
     const response = await this.client.get<{ status: string }>('/health')
+    return response.data
+  }
+
+  // Admin operations
+  async getSystemStatistics(): Promise<any> {
+    const response = await this.client.get('/admin/statistics')
+    return response.data
+  }
+
+  async getAllUsers(page: number = 1, pageSize: number = 20, role?: string): Promise<PaginatedResponse<any>> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      page_size: pageSize.toString()
+    })
+
+    if (role) {
+      params.append('role', role)
+    }
+
+    const response = await this.client.get(`/admin/users?${params}`)
+    return response.data
+  }
+
+  async getUserDetail(userId: string): Promise<any> {
+    const response = await this.client.get(`/admin/users/${userId}`)
+    return response.data
+  }
+
+  async updateUserRole(userId: string, newRole: string): Promise<any> {
+    const response = await this.client.put(`/admin/users/${userId}/role`, newRole)
     return response.data
   }
 }

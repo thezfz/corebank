@@ -19,6 +19,7 @@ from corebank.repositories.postgres_repo import PostgresRepository
 from corebank.services.account_service import AccountService
 from corebank.services.transaction_service import TransactionService
 from corebank.services.investment_service import InvestmentService
+from corebank.services.user_service import UserService
 from corebank.security.token import get_user_id_from_token, verify_token
 from corebank.models.common import TokenData
 
@@ -108,6 +109,21 @@ def get_investment_service(
         InvestmentService: Investment service instance
     """
     return InvestmentService(repository)
+
+
+def get_user_service(
+    repository: Annotated[PostgresRepository, Depends(get_postgres_repository)]
+) -> UserService:
+    """
+    Get user service instance.
+
+    Args:
+        repository: Repository dependency
+
+    Returns:
+        UserService: User service instance
+    """
+    return UserService(repository)
 
 
 # Authentication dependencies

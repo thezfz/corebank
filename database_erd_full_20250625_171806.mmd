@@ -1,0 +1,138 @@
+erDiagram
+
+    ACCOUNTS {
+        uuid id PK,NOT NULL
+        varchar account_number NOT NULL
+        uuid user_id FK,NOT NULL
+        varchar account_type NOT NULL
+        decimal balance NOT NULL
+        timestamp created_at NOT NULL
+    }
+
+    INVESTMENT_HOLDINGS {
+        uuid id PK,NOT NULL
+        uuid user_id FK,NOT NULL
+        uuid account_id FK,NOT NULL
+        uuid product_id FK,NOT NULL
+        decimal shares NOT NULL
+        decimal average_cost NOT NULL
+        decimal total_invested NOT NULL
+        decimal current_value NOT NULL
+        decimal unrealized_gain_loss NOT NULL
+        decimal realized_gain_loss NOT NULL
+        timestamp purchase_date NOT NULL
+        timestamp maturity_date
+        varchar status NOT NULL
+        timestamp created_at NOT NULL
+        timestamp updated_at NOT NULL
+    }
+
+    INVESTMENT_PRODUCTS {
+        uuid id PK,NOT NULL
+        varchar product_code NOT NULL
+        varchar name NOT NULL
+        varchar product_type NOT NULL
+        integer risk_level NOT NULL
+        decimal expected_return_rate
+        decimal min_investment_amount NOT NULL
+        decimal max_investment_amount
+        integer investment_period_days
+        boolean is_active NOT NULL
+        text description
+        jsonb features
+        timestamp created_at NOT NULL
+        timestamp updated_at NOT NULL
+    }
+
+    INVESTMENT_TRANSACTIONS {
+        uuid id PK,NOT NULL
+        uuid user_id FK,NOT NULL
+        uuid account_id FK,NOT NULL
+        uuid product_id FK,NOT NULL
+        uuid holding_id FK
+        varchar transaction_type NOT NULL
+        decimal shares NOT NULL
+        decimal unit_price NOT NULL
+        decimal amount NOT NULL
+        decimal fee NOT NULL
+        decimal net_amount NOT NULL
+        varchar status NOT NULL
+        timestamp settlement_date
+        text description
+        timestamp created_at NOT NULL
+        timestamp updated_at NOT NULL
+    }
+
+    PRODUCT_NAV_HISTORY {
+        uuid id PK,NOT NULL
+        uuid product_id FK,NOT NULL
+        date nav_date NOT NULL
+        decimal unit_nav NOT NULL
+        decimal accumulated_nav
+        decimal daily_return_rate
+        timestamp created_at NOT NULL
+    }
+
+    TRANSACTIONS {
+        uuid id PK,NOT NULL
+        uuid account_id FK,NOT NULL
+        varchar transaction_type NOT NULL
+        decimal amount NOT NULL
+        uuid related_account_id FK
+        varchar description
+        varchar status NOT NULL
+        timestamp timestamp NOT NULL
+    }
+
+    USER_PROFILES {
+        uuid id PK,NOT NULL
+        uuid user_id FK,NOT NULL
+        varchar real_name
+        varchar english_name
+        varchar id_type
+        varchar id_number
+        varchar country
+        varchar ethnicity
+        varchar gender
+        date birth_date
+        varchar birth_place
+        varchar phone
+        varchar email
+        varchar address
+        timestamp created_at NOT NULL
+        timestamp updated_at NOT NULL
+    }
+
+    USER_RISK_ASSESSMENTS {
+        uuid id PK,NOT NULL
+        uuid user_id FK,NOT NULL
+        integer risk_tolerance NOT NULL
+        varchar investment_experience NOT NULL
+        varchar investment_goal NOT NULL
+        varchar investment_horizon NOT NULL
+        varchar monthly_income_range
+        integer assessment_score NOT NULL
+        jsonb assessment_data
+        timestamp expires_at NOT NULL
+        timestamp created_at NOT NULL
+    }
+
+    USERS {
+        uuid id PK,NOT NULL
+        varchar username NOT NULL
+        varchar hashed_password NOT NULL
+        timestamp created_at NOT NULL
+    }
+
+    USERS ||--o{ ACCOUNTS : has
+    USERS ||--o{ INVESTMENT_HOLDINGS : has
+    ACCOUNTS ||--o{ INVESTMENT_HOLDINGS : has
+    INVESTMENT_PRODUCTS ||--o{ INVESTMENT_HOLDINGS : has
+    USERS ||--o{ INVESTMENT_TRANSACTIONS : has
+    ACCOUNTS ||--o{ INVESTMENT_TRANSACTIONS : has
+    INVESTMENT_PRODUCTS ||--o{ INVESTMENT_TRANSACTIONS : has
+    INVESTMENT_HOLDINGS ||--o{ INVESTMENT_TRANSACTIONS : has
+    INVESTMENT_PRODUCTS ||--o{ PRODUCT_NAV_HISTORY : has
+    ACCOUNTS ||--o{ TRANSACTIONS : has
+    USERS ||--|| USER_PROFILES : has
+    USERS ||--o{ USER_RISK_ASSESSMENTS : has

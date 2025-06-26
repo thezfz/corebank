@@ -12,9 +12,9 @@ from typing import Optional, Tuple
 from uuid import UUID
 
 from corebank.models.transaction import (
-    DepositRequest, WithdrawalRequest, TransferRequest,
+    DepositRequest, WithdrawalRequest, TransferRequest, TransferByAccountNumberRequest,
     TransactionResponse, TransactionHistory, TransactionSummary,
-    TransactionType
+    TransactionType, EnhancedTransactionResponse
 )
 from corebank.models.common import PaginationParams, PaginatedResponse
 from corebank.repositories.postgres_repo import PostgresRepository
@@ -33,6 +33,8 @@ class TransactionService:
     # Business rule constants
     MAX_DAILY_WITHDRAWAL = Decimal("10000.00")  # $10,000 daily withdrawal limit
     MAX_SINGLE_TRANSFER = Decimal("50000.00")   # $50,000 single transfer limit
+    MAX_CROSS_USER_TRANSFER = Decimal("10000.00")  # $10,000 cross-user transfer limit
+    MAX_DAILY_CROSS_USER_TRANSFER = Decimal("20000.00")  # $20,000 daily cross-user transfer limit
     MIN_TRANSACTION_AMOUNT = Decimal("0.01")    # Minimum transaction amount
     
     def __init__(self, repository: PostgresRepository) -> None:
@@ -183,11 +185,10 @@ class TransactionService:
         ):
             raise ValueError("Source account not found or access denied")
         
-        # Verify ownership of target account (for now, only allow transfers between own accounts)
-        if not await self.repository.verify_account_ownership(
-            transfer_request.to_account_id, user_id
-        ):
-            raise ValueError("Target account not found or access denied")
+        # Verify target account exists (allow transfers to any valid account)
+        target_account = await self.repository.get_account_by_id(transfer_request.to_account_id)
+        if not target_account:
+            raise ValueError("Target account not found")
         
         # Validate source account has sufficient funds
         await self._validate_account_for_withdrawal(
@@ -225,7 +226,7 @@ class TransactionService:
         pagination: PaginationParams
     ) -> PaginatedResponse[TransactionResponse]:
         """
-        Get transaction history for an account.
+        Get transaction history for an account, including investment transactions.
 
         Args:
             user_id: User ID for ownership verification
@@ -242,20 +243,111 @@ class TransactionService:
         if not await self.repository.verify_account_ownership(account_id, user_id):
             raise ValueError("Account not found or access denied")
 
-        # Get transactions with pagination
-        transactions = await self.repository.get_account_transactions(
+        # Get regular transactions
+        regular_transactions = await self.repository.get_account_transactions(
+            account_id=account_id,
+            limit=pagination.page_size * 2,  # Get more to ensure we have enough after merging
+            offset=0
+        )
+
+        # Get investment transactions for this account
+        all_investment_transactions = await self.repository.get_user_investment_transactions(
+            user_id=user_id,
+            limit=1000,  # Get all investment transactions
+            skip=0
+        )
+
+        # Filter investment transactions for this specific account
+        account_investment_transactions = [
+            tx for tx in all_investment_transactions
+            if tx['account_id'] == account_id
+        ]
+
+        # Convert investment transactions to regular transaction format
+        converted_investment_transactions = []
+        for inv_tx in account_investment_transactions:
+            # Map investment transaction types to Chinese
+            transaction_type_map = {
+                'purchase': '理财申购',
+                'redemption': '理财赎回'
+            }
+            chinese_type = transaction_type_map.get(inv_tx['transaction_type'], f"投资{inv_tx['transaction_type']}")
+
+            converted_tx = {
+                'id': inv_tx['id'],
+                'account_id': inv_tx['account_id'],
+                'transaction_type': chinese_type,
+                'amount': inv_tx['amount'],
+                'related_account_id': None,
+                'description': inv_tx.get('description', chinese_type),
+                'status': 'completed' if inv_tx['status'] == 'confirmed' else inv_tx['status'],
+                'timestamp': inv_tx['created_at']
+            }
+            converted_investment_transactions.append(converted_tx)
+
+        # Merge and sort all transactions by timestamp
+        all_transactions = regular_transactions + converted_investment_transactions
+        all_transactions.sort(key=lambda x: x['timestamp'], reverse=True)
+
+        # Apply pagination
+        start_idx = pagination.offset
+        end_idx = start_idx + pagination.page_size
+        paginated_transactions = all_transactions[start_idx:end_idx]
+
+        # Convert to response models
+        transaction_responses = [
+            TransactionResponse(**transaction) for transaction in paginated_transactions
+        ]
+
+        # Calculate total count
+        regular_count = await self.repository.count_account_transactions(account_id)
+        investment_count = len(account_investment_transactions)
+        total_count = regular_count + investment_count
+
+        return PaginatedResponse.create(
+            items=transaction_responses,
+            total_count=total_count,
+            pagination=pagination
+        )
+
+    async def get_enhanced_transaction_history(
+        self,
+        user_id: UUID,
+        account_id: UUID,
+        pagination: PaginationParams
+    ) -> PaginatedResponse[EnhancedTransactionResponse]:
+        """
+        Get enhanced transaction history for an account with related user information.
+
+        Args:
+            user_id: User ID for ownership verification
+            account_id: Account ID
+            pagination: Pagination parameters
+
+        Returns:
+            PaginatedResponse[EnhancedTransactionResponse]: Paginated enhanced transaction history
+
+        Raises:
+            ValueError: If account not found or access denied
+        """
+        # Verify account ownership
+        if not await self.repository.verify_account_ownership(account_id, user_id):
+            raise ValueError("Account not found or access denied")
+
+        # Get enhanced transactions
+        enhanced_transactions = await self.repository.get_enhanced_account_transactions(
             account_id=account_id,
             limit=pagination.page_size,
             offset=pagination.offset
         )
 
-        # Get total count
-        total_count = await self.repository.count_account_transactions(account_id)
-
         # Convert to response models
         transaction_responses = [
-            TransactionResponse(**transaction) for transaction in transactions
+            EnhancedTransactionResponse(**transaction) for transaction in enhanced_transactions
         ]
+
+        # Get total count
+        total_count = await self.repository.count_account_transactions(account_id)
 
         return PaginatedResponse.create(
             items=transaction_responses,
@@ -269,7 +361,7 @@ class TransactionService:
         pagination: PaginationParams
     ) -> PaginatedResponse[TransactionResponse]:
         """
-        Get recent transactions across all user accounts.
+        Get recent transactions across all user accounts, including investment transactions.
 
         Args:
             user_id: User ID
@@ -290,20 +382,59 @@ class TransactionService:
                 pagination=pagination
             )
 
-        # Get recent transactions across all accounts
-        transactions = await self.repository.get_recent_transactions_for_accounts(
+        # Get both regular and investment transactions
+        regular_transactions = await self.repository.get_recent_transactions_for_accounts(
             account_ids=account_ids,
-            limit=pagination.page_size,
-            offset=pagination.offset
+            limit=pagination.page_size * 2,  # Get more to ensure we have enough after merging
+            offset=0
         )
 
-        # Get total count
-        total_count = await self.repository.count_transactions_for_accounts(account_ids)
+        investment_transactions = await self.repository.get_user_investment_transactions(
+            user_id=user_id,
+            limit=pagination.page_size * 2,
+            skip=0
+        )
+
+        # Convert investment transactions to regular transaction format
+        converted_investment_transactions = []
+        for inv_tx in investment_transactions:
+            # Map investment transaction types to Chinese
+            transaction_type_map = {
+                'purchase': '理财申购',
+                'redemption': '理财赎回'
+            }
+            chinese_type = transaction_type_map.get(inv_tx['transaction_type'], f"投资{inv_tx['transaction_type']}")
+
+            converted_tx = {
+                'id': inv_tx['id'],
+                'account_id': inv_tx['account_id'],
+                'transaction_type': chinese_type,
+                'amount': inv_tx['amount'],
+                'related_account_id': None,
+                'description': inv_tx.get('description', chinese_type),
+                'status': 'completed' if inv_tx['status'] == 'confirmed' else inv_tx['status'],
+                'timestamp': inv_tx['created_at']
+            }
+            converted_investment_transactions.append(converted_tx)
+
+        # Merge and sort all transactions by timestamp
+        all_transactions = regular_transactions + converted_investment_transactions
+        all_transactions.sort(key=lambda x: x['timestamp'], reverse=True)
+
+        # Apply pagination
+        start_idx = pagination.offset
+        end_idx = start_idx + pagination.page_size
+        paginated_transactions = all_transactions[start_idx:end_idx]
 
         # Convert to response models
         transaction_responses = [
-            TransactionResponse(**transaction) for transaction in transactions
+            TransactionResponse(**transaction) for transaction in paginated_transactions
         ]
+
+        # Calculate total count
+        regular_count = await self.repository.count_transactions_for_accounts(account_ids)
+        investment_count = len(investment_transactions)  # For simplicity, use current count
+        total_count = regular_count + investment_count
 
         return PaginatedResponse.create(
             items=transaction_responses,
@@ -447,3 +578,113 @@ class TransactionService:
         # 1. Getting all withdrawals for the account in the last 24 hours
         # 2. Summing the amounts
         # 3. Checking if current withdrawal + sum > daily limit
+
+    async def transfer_by_account_number(
+        self,
+        user_id: UUID,
+        transfer_request: TransferByAccountNumberRequest
+    ) -> Tuple[TransactionResponse, TransactionResponse]:
+        """
+        Process a transfer transaction using target account number.
+
+        Args:
+            user_id: User ID making the transfer
+            transfer_request: Transfer request data with account number
+
+        Returns:
+            Tuple[TransactionResponse, TransactionResponse]: Source and target transactions
+
+        Raises:
+            ValueError: If validation fails
+            RuntimeError: If transaction fails
+        """
+        # Validate amount
+        if transfer_request.amount < self.MIN_TRANSACTION_AMOUNT:
+            raise ValueError(f"Minimum transfer amount is {self.MIN_TRANSACTION_AMOUNT}")
+
+        if transfer_request.amount > self.MAX_SINGLE_TRANSFER:
+            raise ValueError(f"Maximum single transfer limit is {self.MAX_SINGLE_TRANSFER}")
+
+        # Additional validation for cross-user transfers
+        if transfer_request.amount > self.MAX_CROSS_USER_TRANSFER:
+            raise ValueError(f"Maximum cross-user transfer limit is {self.MAX_CROSS_USER_TRANSFER}")
+
+        # Verify ownership of source account
+        if not await self.repository.verify_account_ownership(
+            transfer_request.from_account_id, user_id
+        ):
+            raise ValueError("Source account not found or access denied")
+
+        # Lookup target account by account number
+        target_account = await self.repository.get_account_by_number(transfer_request.to_account_number)
+        if not target_account:
+            raise ValueError("Target account not found")
+
+        # Validate different accounts
+        if transfer_request.from_account_id == target_account['id']:
+            raise ValueError("Cannot transfer to the same account")
+
+        # Check if this is a cross-user transfer
+        source_account = await self.repository.get_account_by_id(transfer_request.from_account_id)
+        if not source_account:
+            raise ValueError("Source account not found")
+
+        is_cross_user_transfer = source_account['user_id'] != target_account['user_id']
+
+        if is_cross_user_transfer:
+            logger.info(f"Cross-user transfer detected: {source_account['user_id']} -> {target_account['user_id']}")
+            # Additional security logging for cross-user transfers
+            logger.warning(
+                f"Cross-user transfer: {transfer_request.amount} from account "
+                f"{transfer_request.from_account_id} to {transfer_request.to_account_number} "
+                f"by user {user_id}"
+            )
+
+        # Validate source account has sufficient funds
+        await self._validate_account_for_withdrawal(
+            transfer_request.from_account_id, user_id, transfer_request.amount
+        )
+
+        try:
+            # Execute transfer transaction
+            from_transaction, to_transaction = await self.repository.execute_transfer(
+                from_account_id=transfer_request.from_account_id,
+                to_account_id=target_account['id'],
+                amount=transfer_request.amount,
+                description=transfer_request.description
+            )
+
+            logger.info(
+                f"Transfer by account number successful: {transfer_request.amount} from "
+                f"{transfer_request.from_account_id} to {transfer_request.to_account_number} "
+                f"by user {user_id}"
+            )
+
+            # Convert to response models
+            from_response = TransactionResponse(
+                id=from_transaction['id'],
+                account_id=from_transaction['account_id'],
+                transaction_type=TransactionType(from_transaction['transaction_type']),
+                amount=from_transaction['amount'],
+                related_account_id=from_transaction.get('related_account_id'),
+                description=from_transaction.get('description'),
+                status=from_transaction['status'],
+                timestamp=from_transaction['timestamp']
+            )
+
+            to_response = TransactionResponse(
+                id=to_transaction['id'],
+                account_id=to_transaction['account_id'],
+                transaction_type=TransactionType(to_transaction['transaction_type']),
+                amount=to_transaction['amount'],
+                related_account_id=to_transaction.get('related_account_id'),
+                description=to_transaction.get('description'),
+                status=to_transaction['status'],
+                timestamp=to_transaction['timestamp']
+            )
+
+            return from_response, to_response
+
+        except Exception as e:
+            logger.error(f"Transfer by account number failed for user {user_id}: {e}")
+            raise RuntimeError(f"Transfer transaction failed: {str(e)}")

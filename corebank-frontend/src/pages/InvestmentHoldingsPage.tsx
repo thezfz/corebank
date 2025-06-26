@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { 
+import {
   ChartBarIcon,
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
@@ -8,18 +8,22 @@ import {
   EyeIcon,
   ArrowPathIcon
 } from '@heroicons/react/24/outline'
-import { useInvestmentHoldings, usePortfolioSummary } from '../hooks/useInvestments'
+import { useInvestmentHoldings, usePortfolioSummary, useRedeemInvestment } from '../hooks/useInvestments'
 import LoadingSpinner from '../components/common/LoadingSpinner'
-import { 
+import RedemptionModal from '../components/investment/RedemptionModal'
+import {
   HoldingStatus,
   PRODUCT_TYPE_LABELS,
   RISK_LEVEL_LABELS,
-  RISK_LEVEL_COLORS
+  RISK_LEVEL_COLORS,
+  InvestmentHolding
 } from '../types/investment'
 
 export default function InvestmentHoldingsPage() {
   const [selectedTab, setSelectedTab] = useState<'all' | 'active' | 'matured'>('all')
-  
+  const [showRedemptionModal, setShowRedemptionModal] = useState(false)
+  const [selectedHolding, setSelectedHolding] = useState<InvestmentHolding | null>(null)
+
   const { data: holdings, isLoading: holdingsLoading, error: holdingsError } = useInvestmentHoldings()
   const { data: portfolio, isLoading: portfolioLoading } = usePortfolioSummary()
 
@@ -46,6 +50,16 @@ export default function InvestmentHoldingsPage() {
       return '0.00%'
     }
     return `${rate >= 0 ? '+' : ''}${rate.toFixed(2)}%`
+  }
+
+  const handleRedemptionClick = (holding: InvestmentHolding) => {
+    setSelectedHolding(holding)
+    setShowRedemptionModal(true)
+  }
+
+  const handleCloseRedemptionModal = () => {
+    setShowRedemptionModal(false)
+    setSelectedHolding(null)
   }
 
   const formatDate = (dateString: string) => {
@@ -280,13 +294,12 @@ export default function InvestmentHoldingsPage() {
                         </div>
                       </div>
 
-                      <div className="mt-4 flex space-x-3">
-                        <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                          <EyeIcon className="h-4 w-4 mr-1.5" />
-                          查看详情
-                        </button>
+                      <div className="mt-4 flex justify-end">
                         {holding.status === HoldingStatus.ACTIVE && (
-                          <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                          <button
+                            onClick={() => handleRedemptionClick(holding)}
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                          >
                             <ArrowPathIcon className="h-4 w-4 mr-1.5" />
                             赎回
                           </button>
@@ -300,6 +313,13 @@ export default function InvestmentHoldingsPage() {
           </ul>
         </div>
       )}
+
+      {/* Redemption Modal */}
+      <RedemptionModal
+        isOpen={showRedemptionModal}
+        onClose={handleCloseRedemptionModal}
+        holding={selectedHolding}
+      />
     </div>
   )
 }

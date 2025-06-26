@@ -11,7 +11,7 @@ from decimal import Decimal
 from typing import Optional
 from uuid import UUID
 
-from corebank.models.account import AccountType, AccountCreate, AccountResponse, AccountSummary
+from corebank.models.account import AccountType, AccountCreate, AccountResponse, AccountSummary, AccountLookupResponse
 from corebank.repositories.postgres_repo import PostgresRepository
 
 logger = logging.getLogger(__name__)
@@ -242,3 +242,38 @@ class AccountService:
             raise ValueError("Insufficient funds")
         
         return account
+
+    async def lookup_account_by_number(self, account_number: str) -> AccountLookupResponse:
+        """
+        Lookup account by account number for transfer purposes.
+
+        Args:
+            account_number: Account number to lookup
+
+        Returns:
+            AccountLookupResponse: Basic account information
+
+        Raises:
+            ValueError: If account not found
+        """
+        # Get account by account number
+        account = await self.repository.get_account_by_number(account_number)
+        if not account:
+            raise ValueError("Account not found")
+
+        # Get owner information (optional, for display purposes)
+        owner_name = None
+        try:
+            user_profile = await self.repository.get_user_profile(account['user_id'])
+            if user_profile:
+                owner_name = user_profile.get('real_name')
+        except Exception:
+            # If we can't get owner name, it's not critical
+            pass
+
+        return AccountLookupResponse(
+            account_id=account['id'],
+            account_number=account['account_number'],
+            account_type=AccountType(account['account_type']),
+            owner_name=owner_name
+        )

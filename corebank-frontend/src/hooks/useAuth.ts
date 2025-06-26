@@ -177,9 +177,17 @@ export function useAuth() {
     }
   }
 
+  // Role checking functions
+  const isAuthenticated = !!user
+  const isAdmin = user?.role === 'admin'
+  const hasRole = (role: string) => user?.role === role
+  const hasAnyRole = (roles: string[]) => roles.includes(user?.role || '')
+
   return {
     user,
     isLoading,
+    isAuthenticated,
+    isAdmin,
     login: loginMutation.mutate,
     register: registerMutation.mutate,
     logout,
@@ -188,5 +196,9 @@ export function useAuth() {
     loginError: loginMutation.error,
     registerError: registerMutation.error,
     registerErrorMessages: registerMutation.error ? parseRegistrationError(registerMutation.error) : [],
+
+    // Role checking functions
+    hasRole,
+    hasAnyRole,
   }
 }

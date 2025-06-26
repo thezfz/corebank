@@ -1,0 +1,71 @@
+erDiagram
+
+    %% 用户管理模块
+    USERS {
+        uuid id PK
+        varchar username
+    }
+    USER_PROFILES {
+        uuid id PK
+        uuid user_id FK
+        varchar real_name
+        varchar email
+    }
+    USER_RISK_ASSESSMENTS {
+        uuid id PK
+        uuid user_id FK
+        integer risk_tolerance
+    }
+
+    %% 账户管理模块
+    ACCOUNTS {
+        uuid id PK
+        varchar account_number
+        uuid user_id FK
+        numeric balance
+    }
+    TRANSACTIONS {
+        uuid id PK
+        uuid account_id FK
+        varchar transaction_type
+        numeric amount
+        uuid related_account_id FK
+    }
+
+    %% 投资理财模块
+    INVESTMENT_PRODUCTS {
+        uuid id PK
+        varchar product_code
+        varchar name
+    }
+    INVESTMENT_HOLDINGS {
+        uuid id PK
+        uuid user_id FK
+        uuid account_id FK
+        uuid product_id FK
+        numeric shares
+    }
+    INVESTMENT_TRANSACTIONS {
+        uuid id PK
+        uuid user_id FK
+        uuid account_id FK
+        uuid product_id FK
+        uuid holding_id FK
+        numeric shares
+    }
+    PRODUCT_NAV_HISTORY {
+        uuid id PK
+        uuid product_id FK
+        numeric unit_nav
+    }
+
+    %% 关系定义
+    USERS ||--|| USER_PROFILES : "1:1"
+    USERS ||--o{ ACCOUNTS : "1:N"
+    USERS ||--o{ USER_RISK_ASSESSMENTS : "1:N"
+    ACCOUNTS ||--o{ TRANSACTIONS : "1:N"
+    USERS ||--o{ INVESTMENT_HOLDINGS : "1:N"
+    INVESTMENT_PRODUCTS ||--o{ INVESTMENT_HOLDINGS : "1:N"
+    INVESTMENT_PRODUCTS ||--o{ INVESTMENT_TRANSACTIONS : "1:N"
+    INVESTMENT_PRODUCTS ||--o{ PRODUCT_NAV_HISTORY : "1:N"
+    INVESTMENT_HOLDINGS ||--o{ INVESTMENT_TRANSACTIONS : "1:N"

@@ -2,6 +2,7 @@ import { lazy } from 'react'
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 import App from '../App'
 import LoadingSpinner from '../components/common/LoadingSpinner'
+import { AdminGuard } from '../components/auth/RoleGuard'
 
 // Lazy load pages
 const LoginPage = lazy(() => import('../pages/LoginPage'))
@@ -15,6 +16,13 @@ const RiskAssessmentPage = lazy(() => import('../pages/RiskAssessmentPage'))
 const InvestmentHoldingsPage = lazy(() => import('../pages/InvestmentHoldingsPage'))
 const InvestmentTransactionsPage = lazy(() => import('../pages/InvestmentTransactionsPage'))
 const ProductRecommendationsPage = lazy(() => import('../pages/ProductRecommendationsPage'))
+const ProfilePage = lazy(() => import('../pages/ProfilePage'))
+
+// Admin pages
+const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'))
+const UserManagement = lazy(() => import('../pages/admin/UserManagement'))
+const TransactionMonitoring = lazy(() => import('../pages/admin/TransactionMonitoring'))
+const SystemSettings = lazy(() => import('../pages/admin/SystemSettings'))
 
 // Router configuration
 const router = createBrowserRouter([
@@ -69,6 +77,43 @@ const router = createBrowserRouter([
       {
         path: 'investments/recommendations',
         element: <ProductRecommendationsPage />,
+      },
+      {
+        path: 'profile',
+        element: <ProfilePage />,
+      },
+      // Admin routes
+      {
+        path: 'admin/dashboard',
+        element: (
+          <AdminGuard>
+            <AdminDashboard />
+          </AdminGuard>
+        ),
+      },
+      {
+        path: 'admin/users',
+        element: (
+          <AdminGuard>
+            <UserManagement />
+          </AdminGuard>
+        ),
+      },
+      {
+        path: 'admin/transactions',
+        element: (
+          <AdminGuard>
+            <TransactionMonitoring />
+          </AdminGuard>
+        ),
+      },
+      {
+        path: 'admin/settings',
+        element: (
+          <AdminGuard>
+            <SystemSettings />
+          </AdminGuard>
+        ),
       },
     ],
   },

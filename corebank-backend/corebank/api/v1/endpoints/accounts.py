@@ -14,7 +14,7 @@ from corebank.api.v1.dependencies import (
     get_current_user_id, get_account_service, verify_account_access
 )
 from corebank.models.account import (
-    AccountCreate, AccountResponse, AccountSummary, AccountBalance
+    AccountCreate, AccountResponse, AccountSummary, AccountBalance, AccountLookupResponse
 )
 from corebank.models.common import MessageResponse
 from corebank.services.account_service import AccountService
@@ -226,4 +226,44 @@ async def get_account_balance(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve account balance"
+        )
+
+
+@router.get("/lookup/{account_number}", response_model=AccountLookupResponse)
+async def lookup_account_by_number(
+    account_number: str,
+    current_user_id: Annotated[UUID, Depends(get_current_user_id)],
+    account_service: Annotated[AccountService, Depends(get_account_service)]
+) -> AccountLookupResponse:
+    """
+    Lookup account by account number for transfer purposes.
+
+    Args:
+        account_number: Account number to lookup
+        current_user_id: Current user ID (for audit purposes)
+        account_service: Account service dependency
+
+    Returns:
+        AccountLookupResponse: Basic account information for transfer
+
+    Raises:
+        HTTPException: If account not found
+    """
+    try:
+        account_info = await account_service.lookup_account_by_number(account_number)
+
+        logger.info(f"Account lookup: {account_number} by user {current_user_id}")
+
+        return account_info
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(f"Failed to lookup account {account_number}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to lookup account"
         )

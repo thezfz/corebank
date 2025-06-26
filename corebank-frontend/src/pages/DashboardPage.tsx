@@ -11,19 +11,34 @@ import {
 import { useAccounts, useAccountSummary } from '../hooks/useAccounts'
 import { useRecentTransactions } from '../hooks/useTransactions'
 import { useAuth } from '../hooks/useAuth'
+import { useKYCStatus } from '../hooks/useUserProfile'
 import CreateAccountModal from '../components/accounts/CreateAccountModal'
+import FirstTimeAccountCreationFlow from '../components/onboarding/FirstTimeAccountCreationFlow'
 import LoadingSpinner from '../components/common/LoadingSpinner'
 
 export default function DashboardPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isOnboardingFlowOpen, setIsOnboardingFlowOpen] = useState(false)
   const { user } = useAuth()
+  const { isKYCCompleted, isLoading: kycLoading } = useKYCStatus()
   const { data: accounts, isLoading: accountsLoading } = useAccounts()
   const { data: summary, isLoading: summaryLoading } = useAccountSummary()
   const { data: recentTransactions, isLoading: transactionsLoading } = useRecentTransactions(5)
 
-  const isLoading = accountsLoading || summaryLoading || transactionsLoading
+  const isLoading = accountsLoading || summaryLoading || transactionsLoading || kycLoading
   const hasAccounts = accounts && accounts.length > 0
   const recentTransactionCount = recentTransactions?.length || 0
+
+  // Handle create account button click
+  const handleCreateAccountClick = () => {
+    if (!isKYCCompleted) {
+      // If KYC not completed, start onboarding flow
+      setIsOnboardingFlowOpen(true)
+    } else {
+      // If KYC completed, show regular create account modal
+      setIsCreateModalOpen(true)
+    }
+  }
 
   const formatCurrency = (amount: string) => {
     const num = parseFloat(amount)
@@ -68,7 +83,7 @@ export default function DashboardPage() {
               </p>
               <div className="mt-4 flex space-x-3">
                 <button
-                  onClick={() => setIsCreateModalOpen(true)}
+                  onClick={handleCreateAccountClick}
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
                 >
                   <PlusIcon className="h-4 w-4 mr-2" />
@@ -150,7 +165,7 @@ export default function DashboardPage() {
           <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">快速操作</h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <button
-              onClick={() => setIsCreateModalOpen(true)}
+              onClick={handleCreateAccountClick}
               className="relative group bg-gray-50 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 rounded-lg hover:bg-gray-100"
             >
               <div>
@@ -226,6 +241,15 @@ export default function DashboardPage() {
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={() => {
           // Modal will close automatically, data will refetch due to query invalidation
+        }}
+      />
+
+      {/* First Time Account Creation Flow */}
+      <FirstTimeAccountCreationFlow
+        isOpen={isOnboardingFlowOpen}
+        onClose={() => setIsOnboardingFlowOpen(false)}
+        onSuccess={() => {
+          // Flow completed, data will refetch due to query invalidation
         }}
       />
     </div>

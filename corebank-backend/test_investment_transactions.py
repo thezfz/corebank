@@ -18,7 +18,7 @@ async def test_investment_transactions():
     # Test data
     test_user = {
         "username": "testuser",
-        "password": "TestPassword123!"
+        "password": "MySecure123!"
     }
     
     async with httpx.AsyncClient() as client:

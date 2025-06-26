@@ -111,7 +111,7 @@ export default function InvestmentTransactionsPage() {
             筛选条件
           </button>
           <div className="text-sm text-gray-500">
-            共 {transactions?.items?.length || 0} 条记录
+            共 {transactions?.length || 0} 条记录
           </div>
         </div>
 
@@ -174,7 +174,7 @@ export default function InvestmentTransactionsPage() {
       </div>
 
       {/* Transactions List */}
-      {!transactions || !transactions.items || transactions.items.length === 0 ? (
+      {!transactions || transactions.length === 0 ? (
         <div className="text-center py-12">
           <ArrowsRightLeftIcon className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">暂无交易记录</h3>
@@ -185,7 +185,7 @@ export default function InvestmentTransactionsPage() {
       ) : (
         <div className="bg-white shadow overflow-hidden sm:rounded-md">
           <ul className="divide-y divide-gray-200">
-            {transactions.items.map((transaction) => (
+            {transactions.map((transaction) => (
               <li key={transaction.id}>
                 <div className="px-4 py-4 sm:px-6">
                   <div className="flex items-center justify-between">
