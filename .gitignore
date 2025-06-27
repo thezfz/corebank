@@ -431,3 +431,4 @@ volumes/
 .vscode/settings.json.local
 .idea/workspace.xml
 .augment-guidelines
+exported_markdown
