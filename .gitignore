@@ -432,3 +432,4 @@ volumes/
 .idea/workspace.xml
 .augment-guidelines
 exported_markdown
+reports/

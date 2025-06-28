@@ -3,7 +3,7 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from unittest.mock import Mock, AsyncMock
 
-from corebank.repositories.user_repository import UserRepository
+from corebank.repositories.postgres_repo import PostgresRepository
 from corebank.models.user import User
 from corebank.schemas.user import UserCreate
 
